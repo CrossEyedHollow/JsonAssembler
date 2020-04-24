@@ -1,0 +1,119 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+JsonAssembler
+</name>
+</assembly>
+<members>
+<member name="T:JsonAssembler.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:JsonAssembler.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:JsonAssembler.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="M:JsonAssembler.Extenders.ColumnToArray(System.Data.DataTable,System.String)">
+ <summary>
+ Returns all rolls of a single column as a string array
+ </summary>
+ <param name="str"></param>
+ <param name="columnName"></param>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.EUA(System.DateTime,System.String[],System.String[],System.String,System.String)">
+ <summary>
+ Application of unit level UIs on unit packets event
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.EPA(System.DateTime,System.String,JsonAssembler.JsonOperationals.AggregationType,System.String,System.String[],System.String[],System.String)">
+ <summary>
+ Message to report an aggregation event
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.EDP(System.DateTime,System.Int32,System.String,System.String[],System.String[],System.String,System.String,System.String,System.String,System.String,JsonAssembler.JsonOperationals.TransportMode,System.String,System.Int32,System.String,System.Int32,System.String,System.Int32,System.String,System.Int32,System.String,System.Int32,System.String,JsonAssembler.JsonOperationals.AggregationType,System.String,System.String[],System.String[],System.String)">
+ <summary>
+  Message to report a dispatch event
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.ERP(System.DateTime,System.Int32,JsonAssembler.JsonOperationals.AggregationType,System.String[],System.String[],System.String,System.String)">
+ <summary>
+ Message to report a reception event
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.ETL(System.DateTime,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.Int32,System.String,System.Int32,System.String,System.Int32,JsonAssembler.JsonOperationals.AggregationType,System.String,System.String[],System.String[],System.String,System.String)">
+ <summary>
+ Message to report a trans-loading event
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.EUD(System.DateTime,System.String,System.String,System.String)">
+ <summary>
+ Message to report an UID disaggregation
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.EVR(System.DateTime,JsonAssembler.JsonOperationals.AggregationType,System.String[],System.String[],System.String,System.String)">
+ <summary>
+ Message to report the delivery carried out with a vending van to retail outlet
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.IDA(System.DateTime,JsonAssembler.JsonOperationals.AggregationType,JsonAssembler.JsonOperationals.DeactivationType,System.String[],System.String,System.String[],System.String,System.String)">
+ <summary>
+ Message to request a UID deactivation
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.CheckBooleanType(System.Int32,System.String,System.String,System.String)">
+ <summary>
+ Checks dependency for null or empty, if type is TRUE
+ </summary>
+ <param name="type"></param>
+ <param name="dependency"></param>
+ <param name="typeName"></param>
+ <param name="dependencyName"></param>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.CheckBooleanTypeReverse(System.Int32,System.String,System.String,System.String)">
+ <summary>
+ Check dependency for null or empty if type is FALSE
+ </summary>
+ <param name="type"></param>
+ <param name="dependency"></param>
+ <param name="typeName"></param>
+ <param name="dependencyName"></param>
+</member>
+<member name="M:JsonAssembler.JsonOperationals.Format(System.String)">
+ <summary>
+ If null or emty returns null as string, else returns the string in double quotes "string" 
+ </summary>
+ <param name="str"></param>
+ <returns></returns>
+</member>
+<member name="M:JsonAssembler.JsonManager.#ctor(System.String)">
+ <summary>
+ Call this method to initialize the needed internal objects 
+ </summary>
+ <param name="url"></param>
+</member>
+<member name="M:JsonAssembler.Main.GetChildren(System.String,System.Data.DataTable)">
+ <summary>
+ Uses some LINQ magic to extract a list consisting of the children of the parent from a datatable
+ </summary>
+ <returns></returns>
+</member>
+</members>
+</doc>
