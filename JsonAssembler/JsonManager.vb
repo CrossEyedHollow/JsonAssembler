@@ -1,4 +1,5 @@
 ﻿Imports System.Net
+Imports System.Text
 Imports RestSharp
 
 Class JsonManager
@@ -28,30 +29,32 @@ Class JsonManager
 
     Public Function Post(json As String) As IRestResponse
         Dim request As RestRequest = New RestRequest(Method.POST)
+        Dim byteBody As Byte() = Encoding.UTF8.GetBytes(json)
+
+        request.AddHeader("cache-control", "no-cache")
+        request.AddHeader("content-type", "application/json; charset=utf-8")
 
         Select Case authType
+            Case AuthenticationType.Basic
+                Dim strBaseCredentials As String = Convert.ToBase64String(Encoding.ASCII.GetBytes(String.Format("{0}:{1}", serverAcc, serverPass)))
+                request.AddHeader("Authorization", $"Basic {strBaseCredentials}")
+
             Case AuthenticationType.Bearer
                 'If there is no valid token avaible return
                 If Not token.IsValid Then Throw New Exception("No valid token avaible for the operation")
 
                 'Add the headers and body
-                request.AddHeader("cache-control", "no-cache")
                 request.AddHeader("Authorization", token.Value)
-
-                'Console.WriteLine("Sending POST with token: " & token.Value)
-                request.AddHeader("content-type", "application/json; charset=utf-8")
-                request.AddParameter("application/json", json, ParameterType.RequestBody)
 
             Case AuthenticationType.NoAuth
                 'Add the headers and body
-                request.AddHeader("cache-control", "no-cache")
                 request.AddHeader("Authorization", "Basic Og==")
-                request.AddHeader("content-type", "application/json; charset=utf-8")
-                request.AddParameter("application/json", json, ParameterType.RequestBody)
-
             Case Else
                 Throw New NotImplementedException($"{authType.ToString()} not implemented yet")
         End Select
+
+        request.AddParameter("application/json", json, ParameterType.RequestBody)
+        request.AddHeader("Content-Length", byteBody.Length)
 
         'Execute
         Dim response = client.Execute(request)

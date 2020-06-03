@@ -420,7 +420,7 @@ Module JsonOperationals
                         buyer_tax_n As String,
                         first_seller_eu As Integer,
                         product_items1() As String,
-                        product_items2() As Integer,
+                        product_items2() As String,
                         product_price() As Decimal,
                         invoice_net As String,
                         invoice_currency As String,

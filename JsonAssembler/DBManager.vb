@@ -126,14 +126,14 @@ Public Class DBManager
         Execute(query)
     End Sub
 
-    Public Function GetDispatchedCodes(table As String, dispatchID As Integer) As String()
+    Public Function GetDispatchedCodes(table As String, dispatchID As Integer, column As String) As String()
         'Assemble query
         Dim query As String = SelectDispatchedCodesQuery(table, dispatchID)
         'Read db
         Dim result As DataTable = ReadDatabase(query)
         'If no rows are returned, return empty array of string, else return the codes
         If result.Rows.Count < 1 Then Return New String() {}
-        Return GetAllCodes(result, "fldPrintCode")
+        Return result.ColumnToArray(column)
     End Function
 
     Public Function InsertJson(body As String, type As String, recallCode As String) As Integer
@@ -285,7 +285,7 @@ Public Class DBManager
 
     Private Function SelectInvoiceProductQuery(orderID As String) As String
         Dim output As String = ""
-        output += "Select a.fldIndex, a.fldOrderID, a.fldProductID, a.fldCount, b.fldPrice "
+        output += "Select a.fldIndex, a.fldOrderID, a.fldProductID, b.fldPrice, b.fldTPID, b.fldPNCode "
         output += $"FROM `{DBName}`.`tblorderproducts` As a "
         output += "LEFT JOIN tblproducts As b "
         output += "On b.fldFCode = a.fldProductID "

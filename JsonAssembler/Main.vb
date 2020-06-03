@@ -161,7 +161,7 @@ Module Main
                 Dim codes As DataTable = db.GetCodesForIDs(arrDeployments)
                 If codes.Rows.Count < 1 Then Throw New Exception($"There are no matches for fldOrderID in ('{String.Join("', '", arrDeployments)}') in tblboxcodes.")
 
-                Dim codesArray = GetAllCodes(codes, "fldPrintCode")
+                Dim codesArray = codes.ColumnToArray("fldCode")
 
                 'Assemble the json
                 Dim recallCode As String = Guid.NewGuid().ToString()
@@ -253,19 +253,19 @@ Module Main
                 Select Case CType(fldUI_Type, AggregationType)
                     Case AggregationType.Unit_Packets_Only
                         'Get the codes
-                        upUIs = db.GetDispatchedCodes("tblprimarycodes", fldIndex)
+                        upUIs = db.GetDispatchedCodes("tblprimarycodes", fldIndex, "fldPrintCode")
                     Case AggregationType.Aggregated_Only
                         'Get the codes
-                        boxCodes = db.GetDispatchedCodes("tblboxcodes", fldIndex)
-                        stackCodes = db.GetDispatchedCodes("tblstackcodes", fldIndex)
+                        boxCodes = db.GetDispatchedCodes("tblboxcodes", fldIndex, "fldCode")
+                        stackCodes = db.GetDispatchedCodes("tblstackcodes", fldIndex, "fldCode")
                         'Add them to the stack
                         aUIs.AddRange(boxCodes)
                         aUIs.AddRange(stackCodes)
                     Case AggregationType.Both
                         'Get the codes
-                        boxCodes = db.GetDispatchedCodes("tblboxcodes", fldIndex)
-                        stackCodes = db.GetDispatchedCodes("tblstackcodes", fldIndex)
-                        upUIs = db.GetDispatchedCodes("tblprimarycodes", fldIndex)
+                        boxCodes = db.GetDispatchedCodes("tblboxcodes", fldIndex, "fldCode")
+                        stackCodes = db.GetDispatchedCodes("tblstackcodes", fldIndex, "fldCode")
+                        upUIs = db.GetDispatchedCodes("tblprimarycodes", fldIndex, "fldPrintCode")
                         'Add them to the stack
                         aUIs.AddRange(boxCodes)
                         aUIs.AddRange(stackCodes)
@@ -322,8 +322,8 @@ Module Main
                 Dim fldValue As String = (CStr(invoice("fldValue"))).Replace(",", ".")
                 Dim fldCurrency As String = invoice("fldCurrency")
                 Dim fldOrderID As String = invoice("fldOrderID")
-                Dim fldProductIDs As String() = Nothing
-                Dim fldProductCounts As Integer() = Nothing
+                Dim fldProductTPIDs As String() = Nothing
+                Dim fldProductPNs As String() = Nothing
                 Dim fldProductPrices As Decimal() = Nothing
 
                 'To get the codes, first get all deployment rolls = fldIndex
@@ -339,26 +339,24 @@ Module Main
 
                 'If the seller IS in the EU, get the product TPIDs, ProductNumbers and prices
                 If fldFirstSellerEU Then
-                    Throw New NotImplementedException("fldFirstSellerEU = true, code not ready yet...")
-                    'TODO, productIDs and numbers must be taken from the codes, not the orderproducts table, CHANGE ASAP
-                    'Get the productIDs, count and price for this OrderID
+                    'Get the TPIDs, PNs and prices for this OrderID
                     Dim products As DataTable = db.GetOrderProducts(fldOrderID)
                     If products.Rows.Count < 1 Then Throw New Exception($"There are no matches for fldOrderID = '{fldOrderID}' in tblorderproducts.")
 
                     'LINQ Magic, converts All values in a column into an array 
-                    fldProductIDs = products.ColumnToArray("fldProductID")
-                    fldProductCounts = products.Rows.OfType(Of DataRow).Select(Function(dr) dr.Field(Of Integer)("fldCount")).ToArray()
+                    fldProductTPIDs = products.ColumnToArray("fldTPID")
+                    fldProductPNs = products.ColumnToArray("fldPNCode")
                     fldProductPrices = products.Rows.OfType(Of DataRow).Select(Function(dr) dr.Field(Of Decimal)("fldPrice")).ToArray()
                 End If
 
-                Dim codesArray = GetAllCodes(codes, "fldPrintCode")
+                Dim codesArray = codes.ColumnToArray("fldCode")
 
                 'Assemble the json
                 Dim recallCode As String = Guid.NewGuid().ToString()
                 Dim jsonBody As String = JsonAssembler.EIV(fldEventTime, fldType, fldOtherType, fldInvoiceNumber, fldDate,
                                                            fldSellerID, fldEUBuyer, fldBuyerID, fldBuyer_Name,
                                                            fldBuyer_Address, fldBuyer_Street1, fldBuyer_Street2, fldBuyer_City, fldBuyer_PostCode, fldBuyer_CountryReg, fldBuyer_Tax_N, fldFirstSellerEU,
-                                                           fldProductIDs, fldProductCounts, fldProductPrices, fldValue, fldCurrency,
+                                                           fldProductTPIDs, fldProductPNs, fldProductPrices, fldValue, fldCurrency,
                                                            AggregationType.Aggregated_Only, recallCode, Nothing, codesArray)
 
                 'Send json to the primary
@@ -382,13 +380,12 @@ Module Main
         'If there are any
         If dtResult.Rows.Count > 0 Then
             'Get the codes
-            Dim longUIs As String() = GetAllCodes(dtResult, "fldPrintCode")
-            Dim shortUIs As String() = GetAllCodes(dtResult, "fldCode")
+            Dim longUIs As String() = dtResult.ColumnToArray("fldPrintCode") 'Code + Timestamp
+            Dim shortUIs As String() = dtResult.ColumnToArray("fldCode") 'Normal code
 
             Try
                 'Assemble JSON
                 Dim fldEventTime As Date = Convert.ToDateTime(dtResult("fldPrintedDate"))
-
                 Dim recallCode As String = Guid.NewGuid().ToString()
                 Dim jsonBody As String = JsonAssembler.EUA(fldEventTime, longUIs, shortUIs, recallCode)
 
@@ -468,40 +465,46 @@ Module Main
             'For each aUI
             For Each row As DataRow In distinctParents.Rows
                 Try
-
+                    'Get the parent code
                     Dim parent As String = row("fldParentCode")
-                    Dim fldEventTime As Date = Convert.ToDateTime(aggregatedCodes("fldAgregatedDate"))
+                    'Select only the rows with fldParentCode = parent
+                    Dim view = aggregatedCodes.DefaultView
+                    view.RowFilter = $"fldParentCode = '{parent}'"
+                    Dim parentTable = view.ToTable()
+                    'Get the necessary variables
+                    Dim fldEventTime As Date = Convert.ToDateTime(parentTable("fldAgregatedDate"))
                     Dim upUIs As String() = Nothing
                     Dim aUIs As String() = Nothing
-                    Dim aUI As String
+                    'Dim aUI As String
 
-                    Select Case table
-                        Case "tblprimarycodes"
-                            aUI = GetPrintedCode("tblstackcodes", parent)
-                        Case "tblstackcodes"
-                            aUI = GetPrintedCode("tblboxcodes", parent)
-                        Case "tblboxcodes"
-                            aUI = parent
-                        Case Else
-                            Throw New NotImplementedException($"'{table}' is not a correct value for function 'DoAggregationEvent'.")
-                    End Select
+                    'Select Case table
+                    '    Case "tblprimarycodes"
+                    '        aUI = GetPrintedCode("tblstackcodes", parent)
+                    '    Case "tblstackcodes"
+                    '        aUI = GetPrintedCode("tblboxcodes", parent)
+                    '    Case "tblboxcodes"
+                    '        aUI = parent
+                    '    Case Else
+                    '        Throw New NotImplementedException($"'{table}' is not a correct value for function 'DoAggregationEvent'.")
+                    'End Select
 
                     'Get a list of the children
-                    Dim children As List(Of String) = GetChildren(parent, aggregatedCodes)
-
+                    Dim children As String()
 
                     Select Case aggType
                         Case AggregationType.Aggregated_Only
-                            aUIs = children.ToArray()
+                            aUIs = parentTable.ColumnToArray("fldCode")
+                            children = aUIs
                         Case AggregationType.Unit_Packets_Only
-                            upUIs = children.ToArray()
+                            upUIs = parentTable.ColumnToArray("fldPrintCode")
+                            children = upUIs
                         Case Else
                             Throw New NotImplementedException($"{AggregationType.Both.ToString()} not implemented.")
                     End Select
 
                     'Assemble JSON
                     Dim recallCode As String = Guid.NewGuid().ToString()
-                    Dim jsonBody As String = JsonAssembler.EPA(fldEventTime, aUI, aggType, recallCode, upUIs, aUIs)
+                    Dim jsonBody As String = JsonAssembler.EPA(fldEventTime, parent, aggType, recallCode, upUIs, aUIs)
 
                     'Send report
                     jMan.Post(jsonBody)
@@ -509,7 +512,7 @@ Module Main
 
                     'Update database
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPA", recallCode)
-                    db.ConfirmAggregatedCodes(table, children.ToArray(), jsonIndex)
+                    db.ConfirmAggregatedCodes(table, children, jsonIndex)
                 Catch ex As Exception
                     Output.Report($"Exception occured while posting JSON: {ex.Message}")
                 End Try
@@ -539,7 +542,7 @@ Module Main
         DBBase.DBIP = dbSetting("fldServer")
         DBBase.DBUser = dbSetting("fldAccount")
         DBBase.DBPass = dbSetting("fldPassword")
-        db = New DBManager() ' The constructor calls the DBBase.Init()
+        db = New DBManager() 'The constructor calls the DBBase.Init()
 
         'Init the JsonManager
         Dim jsonSetting As DataRow = Settings.Tables("tblJSONServer").Rows(0)
@@ -593,8 +596,8 @@ Module Main
         Return output.ToArray()
     End Function
 
-    Public Function GetAllCodes(table As DataTable, column As String) As String()
-        Return table.ColumnToArray(column)
-    End Function
+    'Public Function GetAllCodes(table As DataTable, column As String) As String()
+    '    Return table.ColumnToArray(column)
+    'End Function
 #End Region
 End Module
