@@ -12,6 +12,12 @@ Module Main
 
         Initialize()
 
+        'Testing area
+        'Dim test As JsonManager = New JsonManager("https://slance.kasiprimary.eu:3125/", "slanceLocal", "testPass", 1, Nothing)
+        'Dim result = test.Post("{""Property"":""value""}")
+        'END of testing area
+
+
         Dim stopWatch As Stopwatch = New Stopwatch()
         statusManager.Start()
 
@@ -547,8 +553,11 @@ Module Main
         'Init the JsonManager
         Dim jsonSetting As DataRow = Settings.Tables("tblJSONServer").Rows(0)
         Dim url As String = jsonSetting("fldPostAddress")
+        Dim authType As String = Convert.ToInt32(jsonSetting("fldAuthType"))
+        Dim acc As String = jsonSetting("fldAccount")
+        Dim pass As String = jsonSetting("fldPassword")
 
-        jMan = New JsonManager(url)
+        jMan = New JsonManager(url, acc, pass, authType, Nothing)
         statusManager = New StatusManager(url)
 
         'Init the general settings

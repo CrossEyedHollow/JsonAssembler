@@ -72,7 +72,7 @@ Public Class AuthenticationToken
 End Class
 
 Public Enum AuthenticationType
-    NoAuth
-    Basic
-    Bearer
+    NoAuth = 0
+    Basic = 1
+    Bearer = 2
 End Enum
