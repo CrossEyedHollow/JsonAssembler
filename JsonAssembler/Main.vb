@@ -115,12 +115,19 @@ Module Main
 
 
                 'Send json to the primary
-                jMan.Post(jsonBody)
-                Output.ToConsole("New arrival event sent to the Primary repository. Updating database...")
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole("New arrival event sent to the Primary repository. Updating database...")
 
-                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "ERP", recallCode)
-                db.ConfirmArrival(fldIndex, jsonIndex)
-                'db.ClearDispatchment(uiType, upUIs, aUIs)
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "ERP", recallCode)
+                    db.ConfirmArrival(fldIndex, jsonIndex)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("ERP", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
+
             Catch ex As Exception
                 Output.Report($"Failed to process ERP event: {ex.Message}")
             End Try
@@ -177,11 +184,18 @@ Module Main
                                                            AggregationType.Aggregated_Only, Nothing, codesArray, fldComment)
 
                 'Send json to the primary
-                jMan.Post(jsonBody)
-                Output.ToConsole("New invoice sent to the Primary repository. Updating database...")
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole("New invoice sent to the Primary repository. Updating database...")
 
-                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPR", recallCode)
-                db.ConfirmPayment(fldIndex, jsonIndex)
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPR", recallCode)
+                    db.ConfirmPayment(fldIndex, jsonIndex)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("EPR", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
             Catch ex As Exception
                 Output.Report($"Failed to process EPR event: {ex.Message}")
             End Try
@@ -204,12 +218,20 @@ Module Main
                 Dim recallCode As String = Guid.NewGuid().ToString()
 
                 Dim jsonBody As String = JsonAssembler.RCL(fldTargetCode, fldRecallReason1, recallCode, fldRecallReason2, fldRecallReason3)
-                jMan.Post(jsonBody)
-                Output.ToConsole($"New recall event sent, updating database.")
 
-                'Update the db
-                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "RCL", recallCode)
-                db.ConfirmRecall(fldIndex, jsonIndex)
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole($"New recall event sent, updating database.")
+
+                    'Update the db
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "RCL", recallCode)
+                    db.ConfirmRecall(fldIndex, jsonIndex)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("RCL", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
             Catch ex As Exception
                 Output.Report($"Failed to process RCL event: {ex.Message}")
             End Try
@@ -286,12 +308,19 @@ Module Main
                                               fldEMCS, fldEMCS_ARC, fldSAAD, fldSAAD_Num, fldExpDeclaration, fldExpDeclNumber, fldUI_Type, recallCode, upUIs, aUIs.ToArray(), fldComment)
 
                 'Send json to the primary
-                jMan.Post(jsonBody)
-                Output.ToConsole("New dispatch event sent to the Primary repository. Updating database...")
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole("New dispatch event sent to the Primary repository. Updating database...")
 
-                'Update db
-                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EDP", recallCode)
-                db.ConfirmDispatchEvent(fldIndex, jsonIndex)
+                    'Update db
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EDP", recallCode)
+                    db.ConfirmDispatchEvent(fldIndex, jsonIndex)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("EDP", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
             Catch ex As Exception
                 Output.Report($"Failed to dispatch event: {ex.Message}")
             End Try
@@ -366,11 +395,18 @@ Module Main
                                                            AggregationType.Aggregated_Only, recallCode, Nothing, codesArray)
 
                 'Send json to the primary
-                jMan.Post(jsonBody)
-                Output.ToConsole("New invoice sent to the Primary repository. Updating database...")
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole("New invoice sent to the Primary repository. Updating database...")
 
-                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EIV", recallCode)
-                db.ConfirmInvoice(fldIndex, jsonIndex)
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EIV", recallCode)
+                    db.ConfirmInvoice(fldIndex, jsonIndex)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("EIV", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
             Catch ex As Exception
                 Output.Report($"Invoice proccesing failed: {ex.Message}")
             End Try
@@ -396,12 +432,19 @@ Module Main
                 Dim jsonBody As String = JsonAssembler.EUA(fldEventTime, longUIs, shortUIs, recallCode)
 
                 'Send report
-                jMan.Post(jsonBody)
-                Output.ToConsole("Application of unit level UIs on unit packets event sent... updating DB.")
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole("Application of unit level UIs on unit packets event sent... updating DB.")
 
-                'Update database
-                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EUA", recallCode)
-                db.ConfirmPrintedCodes(table, longUIs, jsonIndex)
+                    'Update database
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EUA", recallCode)
+                    db.ConfirmPrintedCodes(table, longUIs, jsonIndex)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("EUA", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
             Catch ex As Exception
                 Output.Report($"Exception occured while posting JSON: {ex.Message}")
             End Try
@@ -513,12 +556,18 @@ Module Main
                     Dim jsonBody As String = JsonAssembler.EPA(fldEventTime, parent, aggType, recallCode, upUIs, aUIs)
 
                     'Send report
-                    jMan.Post(jsonBody)
-                    Output.ToConsole("Message to report an aggregation event sent... updating DB.")
+                    Dim response = jMan.Post(jsonBody)
+                    If response.IsSuccessful Then
+                        Output.ToConsole("Message to report an aggregation event sent... updating DB.")
 
-                    'Update database
-                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPA", recallCode)
-                    db.ConfirmAggregatedCodes(table, children, jsonIndex)
+                        'Update database
+                        Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPA", recallCode)
+                        db.ConfirmAggregatedCodes(table, children, jsonIndex)
+                    Else
+                        'Save as rejected
+                        db.InsertRejected("EPA", jsonBody, response.Content)
+                        Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                    End If
                 Catch ex As Exception
                     Output.Report($"Exception occured while posting JSON: {ex.Message}")
                 End Try

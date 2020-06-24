@@ -58,9 +58,7 @@ Class JsonManager
 
         'Execute
         Dim response = client.Execute(request)
-        If Not response.IsSuccessful Then
-            Throw New Exception($"POST operation failed, error: {response.Content}")
-        End If
+
         Return response
     End Function
 End Class

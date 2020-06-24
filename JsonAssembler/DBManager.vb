@@ -111,6 +111,11 @@ Public Class DBManager
         Execute(query)
     End Sub
 
+    Public Sub InsertRejected(type As String, json As String, response As String)
+        Dim query As String = $"INSERT INTO `{DBName}`.`tblrejected` (fldType, fldJson, fldRejectReason) VALUES ('{type}','{json}','{response}')"
+        Execute(query)
+    End Sub
+
     Public Sub ConfirmRecall(index As Integer, jsonID As Integer)
         Dim query As String = ConfirmRecallQuery(index, jsonID)
         Execute(query)
