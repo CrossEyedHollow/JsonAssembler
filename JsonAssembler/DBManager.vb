@@ -45,6 +45,11 @@ Public Class DBManager
         Return ReadDatabase(query)
     End Function
 
+    Public Function CheckForDeactivated(table As String) As DataTable
+        Dim query As String = $"select fldCode, fldPrintCode, fldDeactReason from `{DBName}`.`{table}` where fldDeactivated = 1 and fldDeactRep is null;"
+        Return ReadDatabase(query)
+    End Function
+
     Public Function CheckForPayments() As DataTable
         Dim query As String = SelectPaymentsQuery()
         Return ReadDatabase(query)
@@ -108,6 +113,11 @@ Public Class DBManager
 
     Public Sub ConfirmDispatchEvent(index As Integer, jsonID As Integer)
         Dim query As String = ConfirmDispatchQuery(index, jsonID)
+        Execute(query)
+    End Sub
+
+    Public Sub ConfirmDeactivation(codes As String(), table As String)
+        Dim query As String = $"UPDATE `{DBName}`.`{table}` SET fldDeactRep = NOW() WHERE fldCode in ('{String.Join("','", codes)}');"
         Execute(query)
     End Sub
 

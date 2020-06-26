@@ -375,10 +375,10 @@ Module JsonOperationals
                         deact_type As AggregationType,
                         deact_reason1 As DeactivationType,
                         upUI() As String,
+                        aUI() As String,
                         code As String,
-                        Optional aUI() As String = Nothing,
-                        Optional deact_reason2 As String = "none",
-                        Optional deact_reason3 As String = "none") As String
+                        Optional deact_reason2 As String = Nothing,
+                        Optional deact_reason3 As String = Nothing) As String
         'Check validity of input
         CheckDeactivationReason(deact_reason1, deact_reason2)
         CheckUITypeValidity(deact_type, upUI, aUI)

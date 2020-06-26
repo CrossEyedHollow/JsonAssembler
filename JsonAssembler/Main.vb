@@ -66,6 +66,12 @@ Module Main
             End Try
 
             Try
+                eCount += ProcessDeactivated()
+            Catch ex As Exception
+                Output.Report($"Unexpected exception occured while processing IDA event: {ex.Message}")
+            End Try
+
+            Try
                 eCount += RunRecalls()
                 'ReportTime("Recall events check", stopWatch)
             Catch ex As Exception
@@ -80,6 +86,34 @@ Module Main
             Threading.Thread.Sleep(TimeSpan.FromSeconds(sleepTime))
         End While
     End Sub
+
+    Private Function ProcessDeactivated() As Integer
+        Dim result As DataTable = db.CheckForDeactivated("tblprimarycodes")
+
+        If result.Rows.Count > 0 Then
+            Dim deactReason As Integer = Convert.ToInt32(result("fldDeactReason")(0))
+            Dim codes As String() = result.ColumnToArray("fldCode")
+
+            Dim recallCode As String = Guid.NewGuid().ToString()
+            Dim jsonBody As String = JsonAssembler.IDA(Date.UtcNow(), AggregationType.Unit_Packets_Only, deactReason, codes, Nothing, recallCode)
+
+            'Send json to the primary
+            Dim response = jMan.Post(jsonBody)
+            If response.IsSuccessful Then
+                Output.ToConsole("New deactivation event sent to the Primary repository. Updating database...")
+
+                Dim jsonIndex As Integer = db.InsertJson(jsonBody, "IDA", recallCode)
+                db.ConfirmDeactivation(codes, "tblprimarycodes")
+            Else
+                'Save as rejected
+                db.InsertRejected("IDA", jsonBody, response.Content)
+                Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+            End If
+            Return 1
+        Else
+            Return 0
+        End If
+    End Function
 
     Private Function RunArrival() As Integer
         Dim events As DataTable = db.CheckForArivals()
