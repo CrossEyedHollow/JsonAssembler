@@ -95,7 +95,7 @@ Module Main
             Dim codes As String() = result.ColumnToArray("fldCode")
 
             Dim recallCode As String = Guid.NewGuid().ToString()
-            Dim jsonBody As String = JsonAssembler.IDA(Date.UtcNow(), AggregationType.Unit_Packets_Only, deactReason, codes, Nothing, recallCode)
+            Dim jsonBody As String = JsonOperationals.IDA(Date.UtcNow(), AggregationType.Unit_Packets_Only, deactReason, codes, Nothing, recallCode)
 
             'Send json to the primary
             Dim response = jMan.Post(jsonBody)
@@ -145,7 +145,7 @@ Module Main
 
                 'Assemble the json
                 Dim recallCode As String = Guid.NewGuid().ToString()
-                Dim jsonBody As String = JsonAssembler.ERP(fldEventTime, fldReturnType, uiType, upUIs, aUIs, recallCode, fldComment)
+                Dim jsonBody As String = JsonOperationals.ERP(fldEventTime, fldReturnType, uiType, upUIs, aUIs, recallCode, fldComment)
 
 
                 'Send json to the primary
@@ -212,7 +212,7 @@ Module Main
 
                 'Assemble the json
                 Dim recallCode As String = Guid.NewGuid().ToString()
-                Dim jsonBody As String = JsonAssembler.EPR(fldEventTime, fldPaymentDate, fldPaymentType, fldPaymentAmount, fldPaymentCurrency, fldEUBuyer,
+                Dim jsonBody As String = JsonOperationals.EPR(fldEventTime, fldPaymentDate, fldPaymentType, fldPaymentAmount, fldPaymentCurrency, fldEUBuyer,
                                                            fldEO_ID, fldBuyer_Name, fldBuyer_Address, fldBuyer_Street1, fldBuyer_Street2, fldBuyer_City, fldBuyer_PostCode, fldBuyer_CountryReg, fldBuyer_Tax_N,
                                                            fldPaymentRecipient, fldPaymentInvoice, fldInvoicePaid, recallCode,
                                                            AggregationType.Aggregated_Only, Nothing, codesArray, fldComment)
@@ -251,7 +251,7 @@ Module Main
                 Dim fldRecallReason3 As String = Convert.ToString(rcl("fldRecallReason3"))
                 Dim recallCode As String = Guid.NewGuid().ToString()
 
-                Dim jsonBody As String = JsonAssembler.RCL(fldTargetCode, fldRecallReason1, recallCode, fldRecallReason2, fldRecallReason3)
+                Dim jsonBody As String = JsonOperationals.RCL(fldTargetCode, fldRecallReason1, recallCode, fldRecallReason2, fldRecallReason3)
 
                 Dim response = jMan.Post(jsonBody)
                 If response.IsSuccessful Then
@@ -422,7 +422,7 @@ Module Main
 
                 'Assemble the json
                 Dim recallCode As String = Guid.NewGuid().ToString()
-                Dim jsonBody As String = JsonAssembler.EIV(fldEventTime, fldType, fldOtherType, fldInvoiceNumber, fldDate,
+                Dim jsonBody As String = JsonOperationals.EIV(fldEventTime, fldType, fldOtherType, fldInvoiceNumber, fldDate,
                                                            fldSellerID, fldEUBuyer, fldBuyerID, fldBuyer_Name,
                                                            fldBuyer_Address, fldBuyer_Street1, fldBuyer_Street2, fldBuyer_City, fldBuyer_PostCode, fldBuyer_CountryReg, fldBuyer_Tax_N, fldFirstSellerEU,
                                                            fldProductTPIDs, fldProductPNs, fldProductPrices, fldValue, fldCurrency,
@@ -463,7 +463,7 @@ Module Main
                 'Assemble JSON
                 Dim fldEventTime As Date = Convert.ToDateTime(dtResult("fldPrintedDate"))
                 Dim recallCode As String = Guid.NewGuid().ToString()
-                Dim jsonBody As String = JsonAssembler.EUA(fldEventTime, longUIs, shortUIs, recallCode)
+                Dim jsonBody As String = JsonOperationals.EUA(fldEventTime, longUIs, shortUIs, recallCode)
 
                 'Send report
                 Dim response = jMan.Post(jsonBody)
@@ -587,7 +587,7 @@ Module Main
 
                     'Assemble JSON
                     Dim recallCode As String = Guid.NewGuid().ToString()
-                    Dim jsonBody As String = JsonAssembler.EPA(fldEventTime, parent, aggType, recallCode, upUIs, aUIs)
+                    Dim jsonBody As String = JsonOperationals.EPA(fldEventTime, parent, aggType, recallCode, upUIs, aUIs)
 
                     'Send report
                     Dim response = jMan.Post(jsonBody)
@@ -647,8 +647,8 @@ Module Main
         Dim generalSettings As DataRow = Settings.Tables("tblGeneral").Rows(0)
         Dim eoID = generalSettings("fldEO_ID")
         Dim fID = generalSettings("fldF_ID")
-        JsonAssembler.EO_ID = eoID
-        JsonAssembler.F_ID = fID
+        JsonOperationals.EO_ID = eoID
+        JsonOperationals.F_ID = fID
     End Sub
 
 #Region "Helpers"

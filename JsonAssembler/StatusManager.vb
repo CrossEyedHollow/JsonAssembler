@@ -33,7 +33,7 @@ Public Class StatusManager
                         Dim index As Integer = Convert.ToInt32(json("fldIndex"))
                         Dim code As String = json("fldRecallCode")
                         'Create STA type of Json
-                        Dim jsonBody As String = JsonAssembler.STA(code)
+                        Dim jsonBody As String = JsonOperationals.STA(code)
                         'Send it
                         Dim response As String = jMan.Post(jsonBody).Content
 
