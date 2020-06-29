@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports System.Text
 Imports Newtonsoft.Json.Linq
 
 Public Module Extenders
@@ -38,24 +39,6 @@ Public Module Extenders
         Return str.Rows.OfType(Of DataRow).Select(Function(dr) dr.Field(Of String)(columnName)).ToArray()
     End Function
 
-    '<Extension()>
-    'Public Function ToJArray(ByRef array As String()) As JArray
-    '    If IsDBNull(array) Then Return "null"
-    '    If array Is Nothing Then Return "null"
-    '    If array.Length = 0 Then Return "null"
-
-    '    Return JArray.FromObject(array)
-    'End Function
-
-    '<Extension()>
-    'Public Function ToJArray(ByRef array As Decimal()) As JArray
-    '    If IsDBNull(array) Then Return "null"
-    '    If array Is Nothing Then Return "null"
-    '    If array.Length = 0 Then Return "null"
-
-    '    Return JArray.FromObject(array)
-    'End Function
-
     <Extension()>
     Public Function ToJArray(ByRef array As Array) As JArray
         If IsDBNull(array) Then Return Nothing
@@ -63,5 +46,21 @@ Public Module Extenders
         If array.Length = 0 Then Return Nothing
 
         Return JArray.FromObject(array)
+    End Function
+
+    <Extension()>
+    Public Function ToMD5Hash(ByVal input As String) As String
+        Using md5 As Security.Cryptography.MD5 = Security.Cryptography.MD5.Create()
+            'Get the bytes
+            Dim inputBytes As Byte() = Encoding.ASCII.GetBytes(input)
+            'Compute the hash
+            Dim hashBytes As Byte() = md5.ComputeHash(inputBytes)
+            Dim sb As StringBuilder = New StringBuilder()
+            'Convert to string
+            For i As Integer = 0 To hashBytes.Length - 1
+                sb.Append(hashBytes(i).ToString("x2"))
+            Next
+            Return sb.ToString()
+        End Using
     End Function
 End Module

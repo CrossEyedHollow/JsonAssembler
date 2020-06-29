@@ -30,9 +30,7 @@ Class JsonManager
     Public Function Post(json As String) As IRestResponse
         Dim request As RestRequest = New RestRequest(Method.POST)
         Dim byteBody As Byte() = Encoding.UTF8.GetBytes(json)
-
-        request.AddHeader("cache-control", "no-cache")
-        request.AddHeader("content-type", "application/json; charset=utf-8")
+        Dim hash As String = json.ToMD5Hash()
 
         Select Case authType
             Case AuthenticationType.Basic
@@ -53,8 +51,11 @@ Class JsonManager
                 Throw New NotImplementedException($"{authType.ToString()} not implemented yet")
         End Select
 
-        request.AddParameter("application/json", json, ParameterType.RequestBody)
         request.AddHeader("Content-Length", byteBody.Length)
+        request.AddHeader("X-OriginalHash", hash)
+        request.AddHeader("cache-control", "no-cache")
+        request.AddHeader("content-type", "application/json; charset=utf-8")
+        request.AddParameter("application/json", json, ParameterType.RequestBody)
 
         'Execute
         Dim response = client.Execute(request)
