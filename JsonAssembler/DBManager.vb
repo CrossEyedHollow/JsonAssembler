@@ -121,6 +121,11 @@ Public Class DBManager
         Execute(query)
     End Sub
 
+    Public Sub ConfirmDeaggregation(code As String, table As String)
+        Dim query As String = $"UPDATE `{DBName}`.`{table}` SET fldDeactRep = NOW() WHERE fldCode = '{code}';"
+        Execute(query)
+    End Sub
+
     Public Sub InsertRejected(type As String, json As String, response As String)
         Dim query As String = $"INSERT INTO `{DBName}`.`tblrejected` (fldType, fldJson, fldRejectReason) VALUES ('{type}','{json}','{response}')"
         Execute(query)

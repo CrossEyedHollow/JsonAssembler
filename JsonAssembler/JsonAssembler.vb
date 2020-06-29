@@ -302,7 +302,7 @@ Module JsonOperationals
     ''' Message to report an UID disaggregation
     ''' </summary>
     ''' <returns></returns>
-    Public Function EUD(eventTime As Date, aUI As String, code As String, Optional comment As String = "none") As String
+    Public Function EUD(eventTime As Date, aUI As String, code As String, Optional comment As String = Nothing) As String
         'Assemble
         Dim json As JObject = New JObject()
         json("EO_ID") = EO_ID
@@ -310,19 +310,10 @@ Module JsonOperationals
         json("Event_Time") = GetTime(eventTime)
         json("Message_Time_long") = GetTimeLong()
         json("aUI") = aUI
-        json("disaUI_Comment") = comment
+        json("disaUI_comment") = comment
         json("Message_Type") = "EUD"
         json("Code") = code
 
-        'Dim output As String = "{" & vbLf &
-        '    vbTab & $"""EO_ID"": ""{EO_ID}""," & vbLf &
-        '    vbTab & $"""F_ID"": ""{F_ID}""," & vbLf &
-        '    vbTab & $"""Event_Time"": ""{GetTime(eventTime)}""," & vbLf &
-        '    vbTab & $"""Message_Time_long"": ""{GetTimeLong()}""," & vbLf &
-        '    vbTab & $"""aUI"": ""{aUI}""," & vbLf &
-        '    vbTab & $"""disaUI_Comment"": ""{comment}""," & vbLf &
-        '    vbTab & """Message_Type"": ""EUD""," & vbLf &
-        '    vbTab & $"""Code"": ""{code}""" & vbLf & "}"
         Return json.ToString(Formatting.Indented)
     End Function
 

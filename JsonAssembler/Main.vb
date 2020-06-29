@@ -14,7 +14,7 @@ Module Main
 
         'Testing area
         'Dim arr As String() = New String() {"du", "bi", "dah"}
-        'Dim test As String = IDA(Date.Now(), 1, 1, arr, Nothing, "code_zero")
+        'Dim test As String = EUD(Date.Now, "daddy", "test_code")
         'END of testing area
 
 
@@ -66,6 +66,13 @@ Module Main
             End Try
 
             Try
+                eCount += ProcessDeaggregated("tblboxcodes")
+                eCount += ProcessDeaggregated("tblstackcodes")
+            Catch ex As Exception
+                Output.Report($"Unexpected exception occured while processing EUD event: {ex.Message}")
+            End Try
+
+            Try
                 eCount += ProcessDeactivated()
             Catch ex As Exception
                 Output.Report($"Unexpected exception occured while processing IDA event: {ex.Message}")
@@ -86,6 +93,36 @@ Module Main
             Threading.Thread.Sleep(TimeSpan.FromSeconds(sleepTime))
         End While
     End Sub
+
+    Private Function ProcessDeaggregated(table As String) As Integer
+        Dim result As DataTable = db.CheckForDeactivated(table)
+
+        If result.Rows.Count > 0 Then
+            Dim codes As String() = result.ColumnToArray("fldCode")
+            'For each code found, deagregate separately
+            For Each code As String In codes
+                Dim recallCode As String = Guid.NewGuid().ToString()
+                Dim jsonBody As String = JsonOperationals.EUD(Date.UtcNow, code, recallCode)
+
+                'Send json to the primary
+                Dim response = jMan.Post(jsonBody)
+                If response.IsSuccessful Then
+                    Output.ToConsole("New deaggregation event sent to the Primary repository. Updating database...")
+
+                    Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EUD", recallCode)
+                    db.ConfirmDeaggregation(code, table)
+                Else
+                    'Save as rejected
+                    db.InsertRejected("EUD", jsonBody, response.Content)
+                    Throw New Exception($"Post operation failed with code: {response.StatusCode}")
+                End If
+
+            Next
+            Return 1
+        Else
+            Return 0
+        End If
+    End Function
 
     Private Function ProcessDeactivated() As Integer
         Dim result As DataTable = db.CheckForDeactivated("tblprimarycodes")
