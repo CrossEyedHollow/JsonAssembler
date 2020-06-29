@@ -13,8 +13,8 @@ Module Main
         Initialize()
 
         'Testing area
-        'Dim test As JsonManager = New JsonManager("https://slance.kasiprimary.eu:3125/", "slanceLocal", "testPass", 1, Nothing)
-        'Dim result = test.Post("{""Property"":""value""}")
+        'Dim arr As String() = New String() {"du", "bi", "dah"}
+        'Dim test As String = IDA(Date.Now(), 1, 1, arr, Nothing, "code_zero")
         'END of testing area
 
 

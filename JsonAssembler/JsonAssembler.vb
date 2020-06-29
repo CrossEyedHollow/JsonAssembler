@@ -18,8 +18,8 @@ Module JsonOperationals
         json("F_ID") = F_ID
         json("Event_Time") = GetTime(eventTime)
         json("Message_Time_long") = GetTimeLong()
-        json("upUI_1") = JArray.FromObject(upUI_1)
-        json("upUI_2") = JArray.FromObject(upUI_2)
+        json("upUI_1") = upUI_1.ToJArray()
+        json("upUI_2") = upUI_2.ToJArray()
         json("upUI_comment") = comment
         json("Message_Type") = "EUA"
         json("Code") = code
@@ -50,8 +50,8 @@ Module JsonOperationals
         json("Message_Time_long") = GetTimeLong()
         json("aUI") = aUI
         json("Aggregation_Type") = CInt(AggregationType)
-        json("Aggregated_UIs1") = JArray.FromObject(aggregatedUIs1)
-        json("Aggregated_UIs2") = JArray.FromObject(aggregatedUIs2)
+        json("Aggregated_UIs1") = aggregatedUIs1.ToJArray()
+        json("Aggregated_UIs2") = aggregatedUIs2.ToJArray()
         json("aUI_comment") = comment
         json("Message_Type") = "EPA"
         json("Code") = code
@@ -110,8 +110,8 @@ Module JsonOperationals
         json("Message_Time_long") = GetTimeLong()
         json("Destination_ID1") = destinationID1
         json("Destination_ID2") = destinationID2
-        json("Destination_ID3") = JArray.FromObject(destinationID3)
-        json("Destination_ID4") = JArray.FromObject(destinationID4)
+        json("Destination_ID3") = destinationID3.ToJArray()
+        json("Destination_ID4") = destinationID4.ToJArray()
         json("Destination_ID5") = destinationAddress
         json("Destination_ID5_Address_StreetOne") = destinationStreet1
         json("Destination_ID5_Address_StreetTwo") = destinationStreet2
@@ -130,8 +130,8 @@ Module JsonOperationals
         json("Exp_Declaration") = Exp_Declaration
         json("Exp_DeclarationNumber") = Exp_DeclarationNumber
         json("UI_Type") = CInt(ui_type)
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Dispatch_comment") = comment
         json("Message_Type") = "EDP"
         json("Code") = code
@@ -194,8 +194,8 @@ Module JsonOperationals
         json("Message_Time_long") = GetTimeLong()
         json("Product_Return") = productType
         json("UI_Type") = CInt(ui_type)
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Arrival_comment") = comment
         json("Message_Type") = "ERP"
         json("Code") = code
@@ -265,8 +265,8 @@ Module JsonOperationals
         json("EMCS") = EMCS
         json("EMCS_ARC") = EMCS_ARC
         json("UI_Type") = CInt(ui_type)
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Transloading_comment") = comment
         json("Message_Type") = "ETL"
         json("Code") = code
@@ -346,8 +346,8 @@ Module JsonOperationals
         json("Event_Time") = GetTime(eventTime)
         json("Message_Time_long") = GetTimeLong()
         json("UI_Type") = CInt(ui_type)
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Delivery_comment") = comment
         json("Message_Type") = "EVR"
         json("Code") = code
@@ -392,8 +392,8 @@ Module JsonOperationals
         json("Deact_Reason1") = CInt(deact_reason1)
         json("Deact_Reason2") = deact_reason2
         json("Deact_Reason3") = deact_reason3
-        json("Deact_upUI") = JArray.FromObject(upUI)
-        json("Deact_aUI") = JArray.FromObject(aUI)
+        json("Deact_upUI") = upUI.ToJArray()
+        json("Deact_aUI") = aUI.ToJArray()
         json("Code") = code
         json("Message_Type") = "IDA"
 
@@ -463,14 +463,14 @@ Module JsonOperationals
         json("Buyer_Address_PostCode") = buyer_PostCode
         json("Buyer_TAX_N") = buyer_tax_n
         json("First_Seller_EU") = first_seller_eu
-        json("Product_Items_1") = JArray.FromObject(product_items1)
-        json("Product_Items_2") = JArray.FromObject(product_items2)
-        json("Product_Price") = JArray.FromObject(product_price)
+        json("Product_Items_1") = product_items1.ToJArray()
+        json("Product_Items_2") = product_items2.ToJArray()
+        json("Product_Price") = product_price.ToJArray()
         json("Invoice_Net") = invoice_net
         json("Invoice_Currency") = invoice_currency
         json("UI_Type") = ui_type
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Invoice_comment") = comment
         json("Message_Type") = "EIV"
         json("Code") = code
@@ -567,8 +567,8 @@ Module JsonOperationals
         json("Payment_Invoice") = payment_invoice
         json("Invoice_Paid") = invoice_paid
         json("UI_Type") = CInt(ui_type)
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Payment_comment") = comment
         json("Message_Type") = "EPR"
         json("Code") = code
@@ -623,8 +623,8 @@ Module JsonOperationals
         json("Order_Number") = order_number.ToString()
         json("Order_Date") = GetDate(order_date)
         json("UI_Type") = CInt(ui_type)
-        json("upUIs") = JArray.FromObject(upUIs)
-        json("aUIs") = JArray.FromObject(aUIs)
+        json("upUIs") = upUIs.ToJArray()
+        json("aUIs") = aUIs.ToJArray()
         json("Comments") = comment
         json("Message_Type") = "EPO"
         json("Code") = code
@@ -689,26 +689,7 @@ Module JsonOperationals
     End Function
 #End Region
 #Region "Helpers"
-    Private Function StringArrayToJsonArray(array As Array) As String
-        If IsDBNull(array) Then Return "null"
-        If array Is Nothing Then Return "null"
-        If array.Length = 0 Then Return "null"
 
-        'Open the array
-        Dim output As String = "["
-
-        'Add all elements to the main string enclosed in double quotes, and followed by a comma
-        Dim strArray As String() = array.Cast(Of String)
-        For Each item As String In strArray
-            output &= $"""{item}"", "
-        Next
-
-        'Remove the last comma and whitespace
-        output = output.Remove(output.Length - 2, 2)
-        'Close the array
-        output &= "]"
-        Return output
-    End Function
 
     Private Function GetTime() As String
         Return Date.UtcNow.ToString("yyMMddHH")

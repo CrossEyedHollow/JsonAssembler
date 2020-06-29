@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports Newtonsoft.Json.Linq
 
 Public Module Extenders
     <Extension()>
@@ -35,5 +36,32 @@ Public Module Extenders
     <Extension()>
     Public Function ColumnToArray(ByVal str As DataTable, columnName As String) As String()
         Return str.Rows.OfType(Of DataRow).Select(Function(dr) dr.Field(Of String)(columnName)).ToArray()
+    End Function
+
+    '<Extension()>
+    'Public Function ToJArray(ByRef array As String()) As JArray
+    '    If IsDBNull(array) Then Return "null"
+    '    If array Is Nothing Then Return "null"
+    '    If array.Length = 0 Then Return "null"
+
+    '    Return JArray.FromObject(array)
+    'End Function
+
+    '<Extension()>
+    'Public Function ToJArray(ByRef array As Decimal()) As JArray
+    '    If IsDBNull(array) Then Return "null"
+    '    If array Is Nothing Then Return "null"
+    '    If array.Length = 0 Then Return "null"
+
+    '    Return JArray.FromObject(array)
+    'End Function
+
+    <Extension()>
+    Public Function ToJArray(ByRef array As Array) As JArray
+        If IsDBNull(array) Then Return Nothing
+        If array Is Nothing Then Return Nothing
+        If array.Length = 0 Then Return Nothing
+
+        Return JArray.FromObject(array)
     End Function
 End Module
