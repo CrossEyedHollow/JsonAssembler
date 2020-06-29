@@ -673,7 +673,7 @@ Module JsonOperationals
     Public Function STA(recallCode As String) As String
         'Assemble
         Dim json As JObject = New JObject()
-        json("Message_Type") = "RCL"
+        json("Message_Type") = "STA"
         json("Message_Time_long") = GetTimeLong()
         json("Code") = recallCode
         Return json.ToString(Formatting.Indented)
