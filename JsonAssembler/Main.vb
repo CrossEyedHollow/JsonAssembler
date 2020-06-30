@@ -544,6 +544,10 @@ Module Main
     End Function
 
     Private Function DoAggregationEvent(table As String, aggType As AggregationType) As Integer
+
+        'temp bypass TODO return to normal
+        Return 1
+
         'After that check for aggregated codes
         Dim aggregatedCodes As DataTable = db.CheckForAggregatedCodes(table)
         If aggregatedCodes.Rows.Count > 0 Then
