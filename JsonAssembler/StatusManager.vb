@@ -40,7 +40,7 @@ Public Class StatusManager
                         'Update database
                         Dim jResponse As JObject = JObject.Parse(response)
                         Dim errors As Integer = Convert.ToInt32(jResponse("Error"))
-                        Dim errorArr As String = jResponse("Errors")
+                        Dim errorArr As String = jResponse("Errors").ToObject(Of String)
 
                         db.UpdateStatus(index, errors, errorArr)
                         ReportTools.Output.ToConsole($"json status updated at index: {index}, errors: {errors}")
