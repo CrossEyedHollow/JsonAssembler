@@ -101,8 +101,8 @@ Public Class DBManager
         Return ReadDatabase(query)
     End Function
 
-    Public Sub ConfirmAggregatedCodes(table As String, codes As String(), jsonID As Integer)
-        Dim query As String = UpdateAggregatedCoderQuery(table, codes, jsonID)
+    Public Sub ConfirmAggregatedCodes(table As String, columnName As String, codes As String(), jsonID As Integer)
+        Dim query As String = UpdateAggregatedCoderQuery(table, columnName, codes, jsonID)
         Execute(query)
     End Sub
 
@@ -272,9 +272,9 @@ Public Class DBManager
         Return $"UPDATE `{DBName}`.`{table}` SET fldPrintRep = NOW(), fldPrintRepID = {jsonID}  WHERE fldPrintCode in ({strCodes});"
     End Function
 
-    Private Function UpdateAggregatedCoderQuery(table As String, codes() As String, jsonID As Integer) As String
+    Private Function UpdateAggregatedCoderQuery(table As String, columnName As String, codes() As String, jsonID As Integer) As String
         Dim strCodes As String = "'" & String.Join("', '", codes) & "'"
-        Return $"UPDATE `{DBName}`.`{table}` Set fldAggregatedRep = NOW(), fldAggRepID = {jsonID} WHERE fldPrintCode In ({strCodes});"
+        Return $"UPDATE `{DBName}`.`{table}` Set fldAggregatedRep = NOW(), fldAggRepID = {jsonID} WHERE `{columnName}` In ({strCodes});"
     End Function
 
     Private Function SelectInvoicesQuery() As String

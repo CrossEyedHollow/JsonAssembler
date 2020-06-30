@@ -582,13 +582,15 @@ Module Main
 
                     'Get a list of the children
                     Dim children As String()
-
+                    Dim sourceColumn As String
                     Select Case aggType
                         Case AggregationType.Aggregated_Only
-                            aUIs = parentTable.ColumnToArray("fldCode")
+                            sourceColumn = "fldCode" 'aUI
+                            aUIs = parentTable.ColumnToArray(sourceColumn)
                             children = aUIs
                         Case AggregationType.Unit_Packets_Only
-                            upUIs = parentTable.ColumnToArray("fldPrintCode")
+                            sourceColumn = "fldPrintCode" 'upUI(L)
+                            upUIs = parentTable.ColumnToArray(sourceColumn)
                             children = upUIs
                         Case Else
                             Throw New NotImplementedException($"{AggregationType.Both.ToString()} not implemented.")
@@ -605,7 +607,7 @@ Module Main
 
                         'Update database
                         Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPA", recallCode)
-                        db.ConfirmAggregatedCodes(table, children, jsonIndex)
+                        db.ConfirmAggregatedCodes(table, sourceColumn, children, jsonIndex)
                     Else
                         'Save as rejected
                         db.InsertRejected("EPA", jsonBody, response.Content)
