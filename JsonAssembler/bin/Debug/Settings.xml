@@ -6,7 +6,7 @@
 	</tblGeneral>
 	<tblDBSettings>
 		<fldServer>127.0.0.1</fldServer>
-		<fldDBName>dbslancetracktrace</fldDBName>
+		<fldDBName>dbblagoevgradtt</fldDBName>
 		<fldAccount>root</fldAccount>
 		<fldPassword>toor</fldPassword>		
 	</tblDBSettings>

@@ -412,7 +412,7 @@ Module Main
                 Dim fldType As Integer = Convert.ToInt32(invoice("fldType"))
                 Dim fldOtherType As String = invoice("fldOtherType")
                 Dim fldInvoiceNumber As String = invoice("fldInvoiceNumber")
-                Dim fldDate As Date = Convert.ToDateTime(CStr(invoice("fldDate")))
+                Dim fldDate As Date = CDate(invoice("fldDate"))
                 Dim fldSellerID As String = invoice("fldSellerID")
                 Dim fldBuyerID As String = invoice("fldBuyerID")
                 Dim fldBuyer_Name As String = invoice("fldBuyer_Name")
@@ -498,7 +498,7 @@ Module Main
 
             Try
                 'Assemble JSON
-                Dim fldEventTime As Date = Convert.ToDateTime(dtResult("fldPrintedDate"))
+                Dim fldEventTime As Date = CDate(dtResult(0)("fldPrintedDate"))
                 Dim recallCode As String = Guid.NewGuid().ToString()
                 Dim jsonBody As String = JsonOperationals.EUA(fldEventTime, longUIs, shortUIs, recallCode)
 
@@ -543,37 +543,6 @@ Module Main
         Return DoAggregationEvent(table, AggregationType.Aggregated_Only)
     End Function
 
-    Private Sub DoPrintingEvent(table As String)
-        Throw New Exception("DoPrintingEvent function is obsolete")
-        ''Check for printed first
-        'Dim printedCodes As DataTable = db.CheckForPrintedCodes(table)
-        ''If there are any
-        'If printedCodes.Rows.Count > 0 Then
-        '    'Get the codes
-        '    Dim onlyCodes As String() = GetAllCodes(printedCodes, "fldPrintCode")
-
-        '    Try
-
-        '        'Assemble JSON
-        '        Dim fldEventTime As Date = Convert.ToDateTime(printedCodes("fldPrintedDate"))
-        '        Dim recallCode As String = Guid.NewGuid().ToString()
-        '        Dim jsonBody As String = JsonAssembler.EUA(fldEventTime, onlyCodes, onlyCodes, recallCode)
-
-        '        'Send report
-        '        jMan.Post(jsonBody)
-        '        Output.ToConsole("Application of unit level UIs on unit packets event sent... updating DB.")
-
-        '        'Update database
-        '        Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EUA", recallCode)
-        '        db.ConfirmPrintedCodes(table, onlyCodes, jsonIndex)
-        '    Catch ex As Exception
-        '        Output.Report($"Exception occured while posting JSON: {ex.Message}")
-        '    End Try
-        'Else
-        '    Output.ToConsole($"No new printing events in {table}.")
-        'End If
-    End Sub
-
     Private Function DoAggregationEvent(table As String, aggType As AggregationType) As Integer
         'After that check for aggregated codes
         Dim aggregatedCodes As DataTable = db.CheckForAggregatedCodes(table)
@@ -592,7 +561,7 @@ Module Main
                     view.RowFilter = $"fldParentCode = '{parent}'"
                     Dim parentTable = view.ToTable()
                     'Get the necessary variables
-                    Dim fldEventTime As Date = Convert.ToDateTime(parentTable("fldAgregatedDate"))
+                    Dim fldEventTime As Date = CDate(parentTable(0)("fldAgregatedDate"))
                     Dim upUIs As String() = Nothing
                     Dim aUIs As String() = Nothing
                     'Dim aUI As String
