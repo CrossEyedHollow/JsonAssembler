@@ -169,7 +169,7 @@ Public Class DBManager
 #Region "Queries"
     Private Function UpdateStatusQuery(index As Integer, errors As Integer, errorArr As String) As String
         Dim array As String = If(errorArr.IsNullOrEmpty(), "null", $"'{errorArr}'")
-        Return $"UPDATE `{DBName}`.`tbljson` SET fldStatus = 1, fldError = {errors}, fldErrorArr = {array} WHERE fldIndex = {index};"
+        Return $"UPDATE `{DBName}`.`tbljson` SET fldStatus = 1, fldError = {errors}, fldErrorArr = '{array}' WHERE fldIndex = {index};"
     End Function
 
     Private Function InsertNewJsonQuery(body As String, type As String, recallCode As String) As String
