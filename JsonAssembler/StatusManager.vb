@@ -5,8 +5,21 @@ Public Class StatusManager
     Dim thrdListener As Thread
     Public URL As String
 
+    Private serverAcc As String
+    Private serverPass As String
+    Private authType As AuthenticationType
+    Private token As AuthenticationToken
+
     Public Sub New(statusURL As String)
         URL = statusURL
+    End Sub
+
+    Public Sub New(url As String, username As String, password As String, authenticationType As AuthenticationType, authToken As AuthenticationToken)
+        Me.URL = url
+        serverAcc = username
+        serverPass = password
+        authType = authenticationType
+        token = authToken
     End Sub
 
     Public Sub Start()
@@ -20,7 +33,7 @@ Public Class StatusManager
 
     Public Sub CheckStatus()
         Dim db As DBManager = New DBManager()
-        Dim jMan As JsonManager = New JsonManager(URL)
+        Dim jMan As JsonManager = New JsonManager(URL, serverAcc, serverPass, authType, token)
 
         While True
             'Check for jsons with fldStatus = 0
@@ -40,7 +53,7 @@ Public Class StatusManager
                         'Update database
                         Dim jResponse As JObject = JObject.Parse(response)
                         Dim errors As Integer = Convert.ToInt32(jResponse("Error"))
-                        Dim errorArr As String = jResponse("Errors").ToObject(Of String)
+                        Dim errorArr As String = jResponse("Errors").ToString()
 
                         db.UpdateStatus(index, errors, errorArr)
                         ReportTools.Output.ToConsole($"json status updated at index: {index}, errors: {errors}")

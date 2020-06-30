@@ -647,7 +647,7 @@ Module Main
         Dim pass As String = jsonSetting("fldPassword")
 
         jMan = New JsonManager(url, acc, pass, authType, Nothing)
-        statusManager = New StatusManager(url)
+        statusManager = New StatusManager(url, acc, pass, authType, Nothing)
 
         'Init the general settings
         Dim generalSettings As DataRow = Settings.Tables("tblGeneral").Rows(0)
