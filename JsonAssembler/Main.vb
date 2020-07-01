@@ -3,10 +3,19 @@ Imports ReportTools
 
 Module Main
 
-    Dim db As DBManager
-    Private jMan As JsonManager
+    Private Property db As DBManager
+    Private Property jMan As JsonManager
+    Private Property statusManager As StatusManager
 
-    Dim statusManager As StatusManager
+    Private working As Boolean
+    Public ReadOnly Property IsWorking() As Boolean
+        Get
+            Return working
+        End Get
+    End Property
+    Private Property WorkHour As Integer = 0
+    Private Property LastDateChecked As Date = Date.Now.AddDays(-1)
+    Private Property LastReportHour As Integer = -1
 
     Sub Main()
 
@@ -22,75 +31,114 @@ Module Main
         statusManager.Start()
 
         While True
-            Dim eCount As Integer = 0
-            Try
-                stopWatch.Restart()
+            'Wait for the daily work hour
+            WaitForRightTime()
 
-                'Cycle trough the tables in order
-                eCount += RunPrimaryCodesTable()
-                'ReportTime("Primary table check", stopWatch)
-                eCount += RunStackCodesTable()
-                'ReportTime("Stack table check", stopWatch)
-                eCount += RunBoxCodesTable()
-                'ReportTime("Box table check", stopWatch)
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured: {ex.Message}")
-            End Try
+            'Check 3 times
+            For i As Integer = 0 To 2
+                'Do some work
+                Dim eCount As Integer = Work(stopWatch)
 
-            Try
-                eCount += RunDispatchEvents()
-                'ReportTime("Dispatch events check", stopWatch)
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing dispatch event: {ex.Message}")
-            End Try
+                'Stop the timer
+                stopWatch.Stop()
 
-            Try
-                eCount += RunInvoices()
-                'ReportTime("Dispatch events check", stopWatch)
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing invoice event: {ex.Message}")
-            End Try
+                'Report 
+                If eCount = 0 Then Output.ToConsole($"No new events (Search elapsed in {stopWatch.Elapsed.TotalSeconds}s).")
 
-            Try
-                eCount += RunPayments()
-                'ReportTime("Payment events check", stopWatch)
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing payment event: {ex.Message}")
-            End Try
+                'Enable the status manager
+                working = False
+                'Sleep
+                Threading.Thread.Sleep(TimeSpan.FromSeconds(5))
+            Next
+        End While
+    End Sub
 
-            Try
-                eCount += RunArrival()
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing ERP event: {ex.Message}")
+    Private Function Work(stopWatch As Stopwatch) As Integer
+        working = True
+        Dim eCount As Integer = 0
+        Try
+            stopWatch.Restart()
 
-            End Try
+            'Cycle trough the tables in order
+            eCount += RunPrimaryCodesTable()
+            'ReportTime("Primary table check", stopWatch)
+            eCount += RunStackCodesTable()
+            'ReportTime("Stack table check", stopWatch)
+            eCount += RunBoxCodesTable()
+            'ReportTime("Box table check", stopWatch)
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured: {ex.Message}")
+        End Try
 
-            Try
-                eCount += ProcessDeaggregated("tblboxcodes")
-                eCount += ProcessDeaggregated("tblstackcodes")
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing EUD event: {ex.Message}")
-            End Try
+        Try
+            eCount += RunDispatchEvents()
+            'ReportTime("Dispatch events check", stopWatch)
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing dispatch event: {ex.Message}")
+        End Try
 
-            Try
-                eCount += ProcessDeactivated()
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing IDA event: {ex.Message}")
-            End Try
+        Try
+            eCount += RunInvoices()
+            'ReportTime("Dispatch events check", stopWatch)
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing invoice event: {ex.Message}")
+        End Try
 
-            Try
-                eCount += RunRecalls()
-                'ReportTime("Recall events check", stopWatch)
-            Catch ex As Exception
-                Output.Report($"Unexpected exception occured while processing recall event: {ex.Message}")
-            End Try
-            db.Disconnect()
+        Try
+            eCount += RunPayments()
+            'ReportTime("Payment events check", stopWatch)
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing payment event: {ex.Message}")
+        End Try
 
-            Dim sleepTime As Integer = 30
-            If eCount = 0 Then Output.ToConsole($"No new events (Search elapsed in {stopWatch.Elapsed.TotalSeconds}s), sleeping for {sleepTime}s")
-            stopWatch.Stop()
+        Try
+            eCount += RunArrival()
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing ERP event: {ex.Message}")
 
-            Threading.Thread.Sleep(TimeSpan.FromSeconds(sleepTime))
+        End Try
+
+        Try
+            eCount += ProcessDeaggregated("tblboxcodes")
+            eCount += ProcessDeaggregated("tblstackcodes")
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing EUD event: {ex.Message}")
+        End Try
+
+        Try
+            eCount += ProcessDeactivated()
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing IDA event: {ex.Message}")
+        End Try
+
+        Try
+            eCount += RunRecalls()
+            'ReportTime("Recall events check", stopWatch)
+        Catch ex As Exception
+            Output.Report($"Unexpected exception occured while processing recall event: {ex.Message}")
+        End Try
+        db.Disconnect()
+        Return eCount
+    End Function
+
+    Private Sub WaitForRightTime()
+        While True
+            'If it's time to work
+            If LastDateChecked.Day <> Date.Now.Day AndAlso Date.Now.Hour = WorkHour Then
+                'Stop waiting
+                Exit While
+            Else
+                If LastReportHour <> Date.Now.Hour Then
+                    LastReportHour = Date.Now.Hour
+                    'Calculate the remaining time
+                    Dim nextReading As Date = Date.Now.AddHours(Math.Abs(WorkHour - Date.Now.Hour)).AddMinutes(-Date.Now.Minute)
+                    Dim remainingTime As TimeSpan = Date.Now - nextReading
+                    'Report breathing
+                    Output.ToConsole($"Still sleeping, Time until next Daily report: {remainingTime.ToString("hh\h\:mm\m")}")
+                End If
+                'Check again in half a minute
+                Threading.Thread.Sleep(TimeSpan.FromSeconds(30))
+            End If
         End While
     End Sub
 
@@ -658,6 +706,7 @@ Module Main
         Dim generalSettings As DataRow = Settings.Tables("tblGeneral").Rows(0)
         Dim eoID = generalSettings("fldEO_ID")
         Dim fID = generalSettings("fldF_ID")
+        WorkHour = Convert.ToInt32(generalSettings("fldWorkHour"))
         JsonOperationals.EO_ID = eoID
         JsonOperationals.F_ID = fID
     End Sub

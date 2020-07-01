@@ -2,7 +2,8 @@
 <NewDataSet>  
 	<tblGeneral>
 		<fldEO_ID>LEBGR1e003MMN2V5</fldEO_ID>
-		<fldF_ID>LEBGR1f005Ut5Lw2</fldF_ID>		
+		<fldF_ID>LEBGR1f005Ut5Lw2</fldF_ID>	
+		<fldWorkHour>22</fldWorkHour>
 	</tblGeneral>
 	<tblDBSettings>
 		<fldServer>127.0.0.1</fldServer>

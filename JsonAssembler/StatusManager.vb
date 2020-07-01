@@ -36,12 +36,18 @@ Public Class StatusManager
         Dim jMan As JsonManager = New JsonManager(URL, serverAcc, serverPass, authType, token)
 
         While True
+            'Wait for main thread
+            WaitForMainThread()
+
             'Check for jsons with fldStatus = 0
             Dim unconfirmed As DataTable = db.CheckJsonStatus()
             'If any are found
             If unconfirmed.Rows.Count > 0 Then
                 For Each json As DataRow In unconfirmed.Rows
                     Try
+                        'If the main thread has started working, stop status que
+                        If Main.IsWorking Then Exit For
+
                         'Get the code
                         Dim index As Integer = Convert.ToInt32(json("fldIndex"))
                         Dim code As String = json("fldRecallCode")
@@ -60,7 +66,6 @@ Public Class StatusManager
                     Catch ex As Exception
                         ReportTools.Output.Report($"STA message fail: {ex.Message}")
                     End Try
-
                 Next
             End If
 
@@ -68,4 +73,9 @@ Public Class StatusManager
         End While
     End Sub
 
+    Private Sub WaitForMainThread()
+        While IsWorking
+            Thread.Sleep(1000)
+        End While
+    End Sub
 End Class
