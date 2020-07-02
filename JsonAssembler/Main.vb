@@ -43,7 +43,7 @@ Module Main
                 stopWatch.Stop()
 
                 'Report 
-                If eCount = 0 Then Output.ToConsole($"No new events (Search elapsed in {stopWatch.Elapsed.TotalSeconds}s).")
+                If eCount = 0 Then Output.Report($"No new events (Search elapsed in {stopWatch.Elapsed.TotalSeconds}s).")
 
                 'Enable the status manager
                 working = False
@@ -125,6 +125,7 @@ Module Main
         While True
             'If it's time to work
             If LastDateChecked.Day <> Date.Now.Day AndAlso Date.Now.Hour = WorkHour Then
+                LastDateChecked = Date.Now
                 'Stop waiting
                 Exit While
             Else
@@ -134,7 +135,7 @@ Module Main
                     Dim nextReading As Date = Date.Now.AddHours(Math.Abs(WorkHour - Date.Now.Hour)).AddMinutes(-Date.Now.Minute)
                     Dim remainingTime As TimeSpan = Date.Now - nextReading
                     'Report breathing
-                    Output.ToConsole($"Still sleeping, Time until next Daily report: {remainingTime.ToString("hh\h\:mm\m")}")
+                    Output.Report($"Still sleeping, Time until next Daily report: {remainingTime.ToString("hh\h\:mm\m")}")
                 End If
                 'Check again in half a minute
                 Threading.Thread.Sleep(TimeSpan.FromSeconds(30))
@@ -155,7 +156,7 @@ Module Main
                 'Send json to the primary
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole("New deaggregation event sent to the Primary repository. Updating database...")
+                    Output.Report("New deaggregation event sent to the Primary repository. Updating database...")
 
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EUD", recallCode)
                     db.ConfirmDeaggregation(code, table)
@@ -185,7 +186,7 @@ Module Main
             'Send json to the primary
             Dim response = jMan.Post(jsonBody)
             If response.StatusCode < 300 Then
-                Output.ToConsole("New deactivation event sent to the Primary repository. Updating database...")
+                Output.Report("New deactivation event sent to the Primary repository. Updating database...")
 
                 Dim jsonIndex As Integer = db.InsertJson(jsonBody, "IDA", recallCode)
                 db.ConfirmDeactivation(codes, "tblprimarycodes")
@@ -236,7 +237,7 @@ Module Main
                 'Send json to the primary
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole("New arrival event sent to the Primary repository. Updating database...")
+                    Output.Report("New arrival event sent to the Primary repository. Updating database...")
 
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "ERP", recallCode)
                     db.ConfirmArrival(fldIndex, jsonIndex)
@@ -305,7 +306,7 @@ Module Main
                 'Send json to the primary
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole("New invoice sent to the Primary repository. Updating database...")
+                    Output.Report("New invoice sent to the Primary repository. Updating database...")
 
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPR", recallCode)
                     db.ConfirmPayment(fldIndex, jsonIndex)
@@ -340,7 +341,7 @@ Module Main
 
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole($"New recall event sent, updating database.")
+                    Output.Report($"New recall event sent, updating database.")
 
                     'Update the db
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "RCL", recallCode)
@@ -429,7 +430,7 @@ Module Main
                 'Send json to the primary
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole("New dispatch event sent to the Primary repository. Updating database...")
+                    Output.Report("New dispatch event sent to the Primary repository. Updating database...")
 
                     'Update db
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EDP", recallCode)
@@ -516,7 +517,7 @@ Module Main
                 'Send json to the primary
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole("New invoice sent to the Primary repository. Updating database...")
+                    Output.Report("New invoice sent to the Primary repository. Updating database...")
 
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EIV", recallCode)
                     db.ConfirmInvoice(fldIndex, jsonIndex)
@@ -553,7 +554,7 @@ Module Main
                 'Send report
                 Dim response = jMan.Post(jsonBody)
                 If response.StatusCode < 300 Then
-                    Output.ToConsole("Application of unit level UIs on unit packets event sent... updating DB.")
+                    Output.Report("Application of unit level UIs on unit packets event sent... updating DB.")
 
                     'Update database
                     Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EUA", recallCode)
@@ -651,7 +652,7 @@ Module Main
                     'Send report
                     Dim response = jMan.Post(jsonBody)
                     If response.StatusCode < 300 Then
-                        Output.ToConsole("Message to report an aggregation event sent... updating DB.")
+                        Output.Report("Message to report an aggregation event sent... updating DB.")
 
                         'Update database
                         Dim jsonIndex As Integer = db.InsertJson(jsonBody, "EPA", recallCode)

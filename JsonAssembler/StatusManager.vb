@@ -62,7 +62,7 @@ Public Class StatusManager
                         Dim errorArr As String = jResponse("Errors").ToString().Replace("'", "\'")
 
                         db.UpdateStatus(index, errors, errorArr)
-                        ReportTools.Output.ToConsole($"json status updated at index: {index}, errors: {errors}")
+                        ReportTools.Output.Report($"json status updated at index: {index}, errors: {errors}")
                     Catch ex As Exception
                         ReportTools.Output.Report($"STA message fail: {ex.Message}")
                     End Try
