@@ -26,7 +26,6 @@ Module Main
         'Dim test As String = EUD(Date.Now, "daddy", "test_code")
         'END of testing area
 
-
         Dim stopWatch As Stopwatch = New Stopwatch()
         statusManager.Start()
 

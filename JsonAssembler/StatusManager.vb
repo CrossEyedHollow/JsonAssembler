@@ -75,7 +75,9 @@ Public Class StatusManager
 
     Private Sub WaitForMainThread()
         While IsWorking
-            Thread.Sleep(1000)
+            Thread.Sleep(5000)
         End While
+        'Give time to the primary to send the new messages to the secondary
+        Thread.Sleep(TimeSpan.FromHours(1))
     End Sub
 End Class
