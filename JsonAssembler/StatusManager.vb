@@ -69,15 +69,17 @@ Public Class StatusManager
                 Next
             End If
 
-            Thread.Sleep(5000)
+            Thread.Sleep(TimeSpan.FromSeconds(10))
         End While
     End Sub
 
     Private Sub WaitForMainThread()
         While IsWorking
-            Thread.Sleep(5000)
+            Thread.Sleep(TimeSpan.FromSeconds(10))
         End While
-        'Give time to the primary to send the new messages to the secondary
-        Thread.Sleep(TimeSpan.FromHours(1))
+        If Math.Abs(Date.Now.Hour - Main.WorkHour) < 1 Then
+            'Give time to the primary to send the new messages to the secondary
+            Thread.Sleep(TimeSpan.FromHours(1))
+        End If
     End Sub
 End Class

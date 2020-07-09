@@ -838,9 +838,9 @@ Module JsonOperationals
     End Enum
 
     Public Enum RecallReasonType
-        Reported_Event_did_Not_materialise
-        Message_contained_erroneous_information
-        Other
+        Reported_Event_did_Not_materialise = 1
+        Message_contained_erroneous_information = 2
+        Other = 3
     End Enum
 
     Public Enum TransportMode
