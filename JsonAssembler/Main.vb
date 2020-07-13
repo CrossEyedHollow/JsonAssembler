@@ -31,7 +31,7 @@ Module Main
 
         While True
             'Wait for the daily work hour
-            'WaitForRightTime()
+            WaitForRightTime()
 
             'Check 3 times
             For i As Integer = 0 To 2
