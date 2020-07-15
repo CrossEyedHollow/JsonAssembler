@@ -16,6 +16,7 @@ Module Main
     Public Property WorkHour As Integer = 0
     Private Property LastDateChecked As Date = Date.Now.AddDays(-1)
     Private Property LastReportHour As Integer = -1
+    Private Property Wait As Boolean
 
     Sub Main()
 
@@ -35,14 +36,16 @@ Module Main
 
             'Check 3 times
             For i As Integer = 0 To 2
+
                 'Do some work
-                Dim eCount As Integer = Work(stopWatch)
+                stopWatch.Restart()
+                Dim eCount As Integer = Work()
 
                 'Stop the timer
                 stopWatch.Stop()
 
                 'Report 
-                If eCount = 0 Then Output.Report($"No new events (Search elapsed in {stopWatch.Elapsed.TotalSeconds}s).")
+                If eCount = 0 And Not Wait Then Output.Report($"No new events (Search elapsed in {stopWatch.Elapsed.TotalSeconds}s).")
 
                 'Enable the status manager
                 working = False
@@ -53,11 +56,12 @@ Module Main
         End While
     End Sub
 
-    Private Function Work(stopWatch As Stopwatch) As Integer
+    Private Function Work() As Integer
         working = True
         Dim eCount As Integer = 0
         Try
-            stopWatch.Restart()
+
+            If Wait Then Exit Try
 
             'Cycle trough the tables in order
             eCount += RunPrimaryCodesTable()
@@ -99,6 +103,8 @@ Module Main
         End Try
 
         Try
+            If Wait Then Exit Try
+
             eCount += ProcessDeaggregated("tblboxcodes")
             eCount += ProcessDeaggregated("tblstackcodes")
         Catch ex As Exception
@@ -106,6 +112,8 @@ Module Main
         End Try
 
         Try
+            If Wait Then Exit Try
+
             eCount += ProcessDeactivated()
         Catch ex As Exception
             Output.Report($"Unexpected exception occured while processing IDA event: {ex.Message}")
@@ -122,25 +130,23 @@ Module Main
     End Function
 
     Private Sub WaitForRightTime()
-        While True
-            'If it's time to work
-            If LastDateChecked.Day <> Date.Now.Day AndAlso Date.Now.Hour = WorkHour Then
-                LastDateChecked = Date.Now
-                'Stop waiting
-                Exit While
-            Else
-                If LastReportHour <> Date.Now.Hour Then
-                    LastReportHour = Date.Now.Hour
-                    'Calculate the remaining time
-                    Dim nextReading As Date = Date.Now.AddHours(Math.Abs(WorkHour - Date.Now.Hour)).AddMinutes(-Date.Now.Minute)
-                    Dim remainingTime As TimeSpan = Date.Now - nextReading
-                    'Report breathing
-                    Output.Report($"Still sleeping, Time until next Daily report: {remainingTime.ToString("hh\h\:mm\m")}")
-                End If
-                'Check again in half a minute
-                Threading.Thread.Sleep(TimeSpan.FromSeconds(30))
+        'If it's time to work
+        If LastDateChecked.Day <> Date.Now.Day AndAlso Date.Now.Hour = WorkHour Then
+            LastDateChecked = Date.Now
+            'Stop waiting
+            Wait = False
+        Else
+            Wait = True
+            If LastReportHour <> Date.Now.Hour Then
+                LastReportHour = Date.Now.Hour
+                'Calculate the remaining time
+                Dim nextReading As Date = Date.Now.AddHours(Math.Abs(WorkHour - Date.Now.Hour)).AddMinutes(-Date.Now.Minute)
+                Dim remainingTime As TimeSpan = Date.Now - nextReading
+                'Report breathing
+                Output.Report($"Still sleeping, Time until next Daily report: {remainingTime.ToString("hh\h\:mm\m")}")
             End If
-        End While
+
+        End If
     End Sub
 
     Private Function ProcessDeaggregated(table As String) As Integer
