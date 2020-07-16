@@ -51,9 +51,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConnectionTools">
-      <HintPath>..\..\..\..\Dropbox\Work\DLLs\ConnectionTools.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data, Version=8.0.11.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Dropbox\Work\DLLs\MySql.Data.dll</HintPath>
@@ -93,6 +90,8 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\JsonDatetime.vb" />
+    <Compile Include="JsonListener.vb" />
     <Compile Include="Managers\DBBase.vb" />
     <Compile Include="Managers\DBManager.vb" />
     <Compile Include="Helpers\Enums.vb" />
@@ -117,6 +116,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Managers\StatusManager.vb" />
+    <Compile Include="Helpers\User.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -139,6 +139,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

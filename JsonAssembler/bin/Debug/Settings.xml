@@ -1,6 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <NewDataSet>  
 	<tblGeneral>
+		<fldListenerPrefix>http://192.168.1.116:3125/</fldListenerPrefix>
 		<fldEO_ID>LEBGR1e003MMN2V5</fldEO_ID>
 		<fldF_ID>LEBGR1f005Ut5Lw2</fldF_ID>	
 		<fldWorkHour>22</fldWorkHour>
@@ -19,4 +20,8 @@
 		 <fldAccount>local</fldAccount>
 		 <fldPassword>test</fldPassword>
 	</tblJSONServer>
+	<tblListenerUsers>
+		<fldID>primary</fldID>
+		<fldPassword>kasibg1234</fldPassword>
+	</tblListenerUsers>
 </NewDataSet>

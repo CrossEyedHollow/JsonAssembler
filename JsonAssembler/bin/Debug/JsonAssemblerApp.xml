@@ -22,6 +22,11 @@ JsonAssemblerApp
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
+<member name="M:JsonAssemblerApp.JsonListener.Start">
+ <summary>
+ Starts the listener
+ </summary>
+</member>
 <member name="M:JsonAssemblerApp.Extenders.ColumnToArray(System.Data.DataTable,System.String)">
  <summary>
  Returns all rolls of a single column as a string array

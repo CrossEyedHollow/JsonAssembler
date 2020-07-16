@@ -6,6 +6,7 @@ Module Main
     Private Property db As DBManager
     Private Property jMan As JsonManager
     Private Property statusManager As StatusManager
+    Private Property Listener As JsonListener
 
     Private working As Boolean
     Public ReadOnly Property IsWorking() As Boolean
@@ -27,8 +28,10 @@ Module Main
         'Dim test As String = EUD(Date.Now, "daddy", "test_code")
         'END of testing area
 
+        Listener.Start()
+
         Dim stopWatch As Stopwatch = New Stopwatch()
-        statusManager.Start()
+        'statusManager.Start()
 
         While True
             'Wait for the daily work hour
@@ -706,16 +709,32 @@ Module Main
         Dim acc As String = jsonSetting("fldAccount")
         Dim pass As String = jsonSetting("fldPassword")
 
+        'Init the JsonManager
         jMan = New JsonManager(url, acc, pass, authType, Nothing)
         statusManager = New StatusManager(url, acc, pass, authType, Nothing)
+
+        'Get the users settings
+        Dim userSettings As DataTable = Settings.Tables("tblListenerUsers")
+        JsonListener.Users = New List(Of User)
+        For Each dr As DataRow In userSettings.Rows
+            Dim userID As String = dr("fldID")
+            Dim userPass As String = dr("fldPassword")
+
+            JsonListener.Users.Add(New User() With {.Name = userID, .Password = userPass})
+        Next
 
         'Init the general settings
         Dim generalSettings As DataRow = Settings.Tables("tblGeneral").Rows(0)
         Dim eoID = generalSettings("fldEO_ID")
         Dim fID = generalSettings("fldF_ID")
+        JsonListener.Prefix = generalSettings("fldListenerPrefix")
         WorkHour = Convert.ToInt32(generalSettings("fldWorkHour"))
         JsonOperationals.EO_ID = eoID
         JsonOperationals.F_ID = fID
+
+        'Initialize listener
+        Listener = New JsonListener()
+
     End Sub
 
 #Region "Helpers"

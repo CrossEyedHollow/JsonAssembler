@@ -1,4 +1,5 @@
-﻿Imports System.Runtime.CompilerServices
+﻿Imports System.Net
+Imports System.Runtime.CompilerServices
 Imports System.Text
 Imports Newtonsoft.Json.Linq
 
@@ -50,7 +51,7 @@ Public Module Extenders
 
     <Extension()>
     Public Function ToMD5Hash(ByVal input As String) As String
-        Using md5 As Security.Cryptography.MD5 = Security.Cryptography.MD5.Create()
+        Using md5 As System.Security.Cryptography.MD5 = System.Security.Cryptography.MD5.Create()
             'Get the bytes
             Dim inputBytes As Byte() = Encoding.ASCII.GetBytes(input)
             'Compute the hash
@@ -62,5 +63,25 @@ Public Module Extenders
             Next
             Return sb.ToString()
         End Using
+    End Function
+
+    <Extension()>
+    Public Function ToMySQL(ByVal d As Date) As String
+        Return d.ToString(DBBase.DateTimeFormat)
+    End Function
+
+    <Extension()>
+    Public Function Respond(ByRef context As HttpListenerContext, answer As String, statusCode As Integer) As HttpListenerContext
+        'Get the answer as byte array
+        Dim byteAnswer As Byte() = Encoding.UTF8.GetBytes(answer)
+
+        'Set needed parameters
+        context.Response.StatusCode = statusCode
+        context.Response.ContentLength64 = byteAnswer.Length
+        context.Response.ContentType = "application/json"
+
+        'Send the answer
+        context.Response.OutputStream.Write(byteAnswer, 0, byteAnswer.Count)
+        Return context
     End Function
 End Module

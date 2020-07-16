@@ -131,6 +131,20 @@ Public Class DBManager
         Execute(query)
     End Sub
 
+    Public Function InsertRawJson(table As String, Json As String, type As String) As Boolean
+        'Generate the query 
+        Dim query As String = $"INSERT INTO `{DBName}`.`{table}` (fldJson, fldType) VALUES ('{Json}', '{type}');"
+        'Execute it
+        Return Execute(query)
+    End Function
+
+    Public Function InsertIRU(Json As String, type As String, eventTime As Date, quantity As Integer) As Boolean
+        'Generate the query
+        Dim query As String = $"INSERT INTO `{DBName}`.`tblincomingjson` (fldJson, fldType, fldEventTime, fldQuantity) VALUES ('{Json}', '{type}');"
+        'Execute it
+        Return Execute(query)
+    End Function
+
     Public Sub ConfirmRecall(index As Integer, jsonID As Integer)
         Dim query As String = ConfirmRecallQuery(index, jsonID)
         Execute(query)
@@ -317,65 +331,4 @@ Public Class DBManager
         Return $"SELECT * FROM `{DBName}`.`tbljson` WHERE fldStatus = 0;"
     End Function
 #End Region
-
-#Region "Direct access"
-    Public Function ReadDatabase(query As String) As DataTable
-        cmd.CommandText = query
-        adapter.SelectCommand = cmd
-        Dim output As New DataTable
-
-        Try
-            If conn.State <> ConnectionState.Open Then conn.Open()
-            adapter.Fill(output)
-        Catch ex As Exception
-            ReportTools.Output.Report($"Exception occured While reading from database: '{ex.Message}'")
-        End Try
-
-        Return output
-    End Function
-
-    Public Function Execute(query As String) As Boolean
-        If query = String.Empty Then Return False
-        Dim output As Boolean = False
-
-        'Execute the query
-        cmd.CommandText = query
-        Try
-            If conn.State <> ConnectionState.Open Then conn.Open()
-            cmd.ExecuteNonQuery()
-            output = True
-        Catch ex As Exception
-            ReportTools.Output.Report($"Exception occured while writing to Database: '{ex.Message}'; {Environment.NewLine}Query: {query}")
-        End Try
-
-        'Close connection and return the result
-        Return output
-    End Function
-
-    Public Function ExecuteReturnIndex(query As String) As Integer
-        If query = String.Empty Then Return -1
-        Dim output As Integer = -1
-
-        'Execute the query
-        cmd.CommandText = query
-        Try
-            If conn.State <> ConnectionState.Open Then conn.Open()
-            cmd.ExecuteNonQuery()
-            output = cmd.LastInsertedId
-        Catch ex As Exception
-            ReportTools.Output.Report($"Exception occured while writing to Database: '{ex.Message}'; {Environment.NewLine}Query: {query}")
-        End Try
-
-        'Close connection and return the result
-        Return output
-    End Function
-
-    Public Sub Disconnect()
-        Try
-            If conn.State <> ConnectionState.Closed Then conn.Close()
-        Catch
-        End Try
-    End Sub
-#End Region
-
 End Class
