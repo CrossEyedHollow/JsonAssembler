@@ -30,6 +30,12 @@ Module Main
 
         Listener.Start()
 
+        'Temp block
+        While True
+            Threading.Thread.Sleep(TimeSpan.FromSeconds(5))
+        End While
+
+
         Dim stopWatch As Stopwatch = New Stopwatch()
         'statusManager.Start()
 

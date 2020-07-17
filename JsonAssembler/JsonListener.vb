@@ -47,7 +47,6 @@ Public Class JsonListener
         End While
     End Sub
 
-
     Public Sub ProccessMessage(context As HttpListenerContext)
         Try
             'Declare variables
@@ -56,6 +55,7 @@ Public Class JsonListener
             Dim responseCode As Integer = 202
 
             'Check credentials
+            If CheckCredentials(context) <> AuthResult.Valid Then Exit Sub
 
             'Convert message to string
             Dim rawText As String = New StreamReader(context.Request.InputStream, context.Request.ContentEncoding).ReadToEnd()
@@ -100,4 +100,25 @@ Public Class JsonListener
             End Try
         End Try
     End Sub
+
+    Public Function CheckCredentials(context As HttpListenerContext) As AuthResult
+        Dim output As AuthResult = AuthResult.Valid
+        Dim id As HttpListenerBasicIdentity = context.User.Identity
+        Dim hashPass As String = ToMD5Hash(id.Password)
+
+        Dim sender = JsonListener.Users.FirstOrDefault(Function(x) x.Name = id.Name)
+
+        'If the user is not found or the password doesnt match
+        If sender Is Nothing OrElse sender.Password <> hashPass Then
+            ReportTools.Output.Report($"Bad user or password, user: '{id.Name}', pass: '{id.Password}'.")
+            output = AuthResult.Invalid
+        End If
+        Return output
+    End Function
+
+    Public Enum AuthResult
+        Valid
+        Invalid
+    End Enum
+
 End Class

@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <NewDataSet>  
 	<tblGeneral>
-		<fldListenerPrefix>http://192.168.1.116:3125/</fldListenerPrefix>
+		<fldListenerPrefix>http://212.50.28.106:3125/</fldListenerPrefix>
 		<fldEO_ID>LEBGR1e003MMN2V5</fldEO_ID>
 		<fldF_ID>LEBGR1f005Ut5Lw2</fldF_ID>	
 		<fldWorkHour>22</fldWorkHour>
