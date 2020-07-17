@@ -55,7 +55,7 @@ Public Class JsonListener
             Dim responseCode As Integer = 202
 
             'Check credentials
-            If CheckCredentials(context) <> AuthResult.Valid Then Exit Sub
+            Dim user = CheckCredentials(context)
 
             'Convert message to string
             Dim rawText As String = New StreamReader(context.Request.InputStream, context.Request.ContentEncoding).ReadToEnd()
@@ -82,7 +82,6 @@ Public Class JsonListener
                         Output.ToConsole("New json received.")
                     End If
                     answer = StandartResponse(code, msgType, rawText.ToMD5Hash(), Nothing)
-
             End Select
 
             'Return a response
@@ -91,7 +90,7 @@ Public Class JsonListener
             Try
                 'If something fails, respond with error message and log the error
                 Dim reason = New With {.Error_Code = "SYSTEM_ERROR", .Error_Descr = $"Failed to process incoming message, reason: {ex.Message}"}
-                Dim response As String = StandartResponse(Nothing, Nothing, Nothing, reason)
+                Dim response As String = StandartResponse(Nothing, Nothing, Nothing, {reason}.ToList())
                 Output.Report(reason.Error_Descr)
 
                 context.Respond(response, 500) '500 = Internal server error
@@ -101,19 +100,16 @@ Public Class JsonListener
         End Try
     End Sub
 
-    Public Function CheckCredentials(context As HttpListenerContext) As AuthResult
-        Dim output As AuthResult = AuthResult.Valid
+    Public Function CheckCredentials(context As HttpListenerContext) As User
         Dim id As HttpListenerBasicIdentity = context.User.Identity
-        Dim hashPass As String = ToMD5Hash(id.Password)
-
-        Dim sender = JsonListener.Users.FirstOrDefault(Function(x) x.Name = id.Name)
+        Dim sender = Users.FirstOrDefault(Function(x) x.Name = id.Name)
 
         'If the user is not found or the password doesnt match
-        If sender Is Nothing OrElse sender.Password <> hashPass Then
-            ReportTools.Output.Report($"Bad user or password, user: '{id.Name}', pass: '{id.Password}'.")
-            output = AuthResult.Invalid
+        If sender Is Nothing OrElse sender.Password <> id.Password Then
+            Throw New Exception($"Bad user or password, user: '{id.Name}', pass: '{id.Password}'.")
+        Else
+            Return sender
         End If
-        Return output
     End Function
 
     Public Enum AuthResult
