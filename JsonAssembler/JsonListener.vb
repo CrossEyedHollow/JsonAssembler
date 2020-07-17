@@ -14,8 +14,8 @@ Public Class JsonListener
 
     Public Sub New()
         listener = New HttpListener()
-        listener.Prefixes.Add("http://localhost:8080/")
-        listener.Prefixes.Add("http://127.0.0.1:8080/")
+        'listener.Prefixes.Add("http://localhost:8080/")
+        'listener.Prefixes.Add("http://127.0.0.1:8080/")
         listener.Prefixes.Add(Prefix)
         listener.AuthenticationSchemes = AuthenticationSchemes.Basic
     End Sub
