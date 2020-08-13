@@ -321,7 +321,7 @@ Public Class DBManager
         Dim output As String = ""
         output += "Select a.fldIndex, a.fldOrderID, a.fldProductID, b.fldPrice, b.fldTPID, b.fldPNCode "
         output += $"FROM `{DBName}`.`tblorderproducts` As a "
-        output += "LEFT JOIN tblproducts As b "
+        output += $"LEFT JOIN `{DBName}`.tblproducts As b "
         output += "On b.fldFCode = a.fldProductID "
         output += $"WHERE fldOrderID = {orderID};"
         Return output
