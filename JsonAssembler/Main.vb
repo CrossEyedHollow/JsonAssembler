@@ -36,7 +36,7 @@ Module Main
         'End While
 
         Dim stopWatch As Stopwatch = New Stopwatch()
-        'statusManager.Start()
+        statusManager.Start()
 
         While True
             'Wait for the daily work hour
