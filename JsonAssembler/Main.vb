@@ -487,7 +487,7 @@ Module Main
                 Dim fldBuyer_CountryReg As String = invoice("fldBuyer_CountryReg")
                 Dim fldBuyer_Tax_N As String = invoice("fldBuyer_Tax_N")
                 Dim fldEUBuyer As Integer = Convert.ToInt32(CStr(invoice("fldEUBuyer")))
-                Dim fldFirstSellerEU As Boolean = Convert.ToBoolean(invoice("fldFirstSellerEU"))
+                Dim fldFirstSellerEU As Integer = Convert.ToInt32(invoice("fldFirstSellerEU"))
                 Dim fldValue As String = (CStr(invoice("fldValue"))).Replace(",", ".")
                 Dim fldCurrency As String = invoice("fldCurrency")
                 Dim fldOrderID As String = invoice("fldOrderID")
@@ -507,7 +507,7 @@ Module Main
                 If codes.Rows.Count < 1 Then Throw New Exception($"There are no matches for fldOrderID in ('{String.Join("', '", arrDeployments)}') in tblboxcodes.")
 
                 'If the seller IS in the EU, get the product TPIDs, ProductNumbers and prices
-                If fldFirstSellerEU Then
+                If fldFirstSellerEU = 1 Then
                     'Get the TPIDs, PNs and prices for this OrderID
                     Dim products As DataTable = db.GetOrderProducts(fldOrderID)
                     If products.Rows.Count < 1 Then Throw New Exception($"There are no matches for fldOrderID = '{fldOrderID}' in tblorderproducts.")
