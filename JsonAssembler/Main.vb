@@ -345,7 +345,7 @@ Module Main
         For Each rcl As DataRow In recalls.Rows
             Try
                 Dim fldIndex As Integer = Convert.ToInt32(rcl("fldIndex"))
-                Dim fldTargetCode As String = Convert.ToInt32(rcl("fldRecallCode"))
+                Dim fldTargetCode As String = rcl("fldRecallCode")
                 Dim fldRecallReason1 As Integer = Convert.ToInt32(rcl("fldRecallReason1"))
                 Dim fldRecallReason2 As String = Convert.ToString(rcl("fldRecallReason2"))
                 Dim fldRecallReason3 As String = Convert.ToString(rcl("fldRecallReason3"))
