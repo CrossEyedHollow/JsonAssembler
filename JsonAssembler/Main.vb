@@ -25,7 +25,8 @@ Module Main
 
         'Testing area
         'Dim arr As String() = New String() {"du", "bi", "dah"}
-        'Dim test As String = EUD(Date.Now, "daddy", "test_code")
+        'Dim test As String = RCL("1af94ddd-fdc2-49aa-9b38-dd8246516477", RecallReasonType.Other, Guid.NewGuid().ToString())
+        'Dim test As String = IDA(Date.Now, AggregationType.Unit_Packets_Only, DeactivationType.UI_unused, arr, Nothing, "GUID_1")
         'END of testing area
 
         Listener.Start()
@@ -282,20 +283,20 @@ Module Main
                 Dim fldPaymentAmount As Decimal = Convert.ToDecimal(row("fldPaymentAmount"))
                 Dim fldPaymentCurrency As String = row("fldPaymentCurrency")
                 Dim fldEUBuyer As Integer = Convert.ToInt32(row("fldEUBuyer"))
-                Dim fldEO_ID As String = row("fldEO_ID")
+                Dim fldEO_ID As String = Convert.ToString(row("fldEO_ID"))
                 Dim fldBuyer_Name As String = CStr(row("fldBuyer_Name"))
                 Dim fldBuyer_Address As String = CStr(row("fldBuyer_Address"))
-                Dim fldBuyer_Street1 As String = row("fldBuyerStreet1")
-                Dim fldBuyer_Street2 As String = row("fldBuyerStreet2")
-                Dim fldBuyer_City As String = row("fldBuyerCity")
-                Dim fldBuyer_PostCode As String = row("fldBuyerPostCode")
-                Dim fldBuyer_CountryReg As String = row("fldBuyer_CountryReg")
-                Dim fldBuyer_Tax_N As String = row("fldBuyer_Tax_N")
-                Dim fldPaymentRecipient As String = row("fldPaymentRecipient")
+                Dim fldBuyer_Street1 As String = Convert.ToString(row("fldBuyerStreet1"))
+                Dim fldBuyer_Street2 As String = Convert.ToString(row("fldBuyerStreet2"))
+                Dim fldBuyer_City As String = Convert.ToString(row("fldBuyerCity"))
+                Dim fldBuyer_PostCode As String = Convert.ToString(row("fldBuyerPostCode"))
+                Dim fldBuyer_CountryReg As String = Convert.ToString(row("fldBuyer_CountryReg"))
+                Dim fldBuyer_Tax_N As String = Convert.ToString(row("fldBuyer_Tax_N"))
+                Dim fldPaymentRecipient As String = Convert.ToString(row("fldPaymentRecipient"))
                 Dim fldPaymentInvoice As Integer = Convert.ToInt32(row("fldPaymentInvoice"))
-                Dim fldInvoicePaid As String = row("fldInvoicePaid")
-                Dim fldComment As String = If(IsDBNull(row("fldComment")), "", row("fldComment"))
-                Dim fldOrderID As String = row("fldOrderID")
+                Dim fldInvoicePaid As String = Convert.ToString(row("fldInvoicePaid"))
+                Dim fldComment As String = Convert.ToString(row("fldComment"))
+                Dim fldOrderID As String = Convert.ToString(row("fldOrderID"))
 
                 'To get the codes, first get all deployment rolls = fldIndex
                 Dim deploymentsInInvoice As DataTable = db.SelectDeploymentsForInvoice(fldInvoicePaid)
@@ -473,24 +474,24 @@ Module Main
                 Dim fldIndex As Integer = Convert.ToInt32(invoice("fldIndex"))
                 Dim fldEventTime As Date = Convert.ToDateTime(invoice("fldEventTime"))
                 Dim fldType As Integer = Convert.ToInt32(invoice("fldType"))
-                Dim fldOtherType As String = invoice("fldOtherType")
-                Dim fldInvoiceNumber As String = invoice("fldInvoiceNumber")
+                Dim fldOtherType As String = Convert.ToString(invoice("fldOtherType"))
+                Dim fldInvoiceNumber As String = Convert.ToString(invoice("fldInvoiceNumber"))
                 Dim fldDate As Date = CDate(invoice("fldDate"))
-                Dim fldSellerID As String = invoice("fldSellerID")
-                Dim fldBuyerID As String = invoice("fldBuyerID")
-                Dim fldBuyer_Name As String = invoice("fldBuyer_Name")
+                Dim fldSellerID As String = Convert.ToString(invoice("fldSellerID"))
+                Dim fldBuyerID As String = Convert.ToString(invoice("fldBuyerID"))
+                Dim fldBuyer_Name As String = Convert.ToString(invoice("fldBuyer_Name"))
                 Dim fldBuyer_Address As String = invoice("fldBuyer_Address")
-                Dim fldBuyer_Street1 As String = invoice("fldBuyerStreet1")
-                Dim fldBuyer_Street2 As String = invoice("fldBuyerStreet2")
-                Dim fldBuyer_City As String = invoice("fldBuyerCity")
-                Dim fldBuyer_PostCode As String = invoice("fldBuyerPostCode")
-                Dim fldBuyer_CountryReg As String = invoice("fldBuyer_CountryReg")
-                Dim fldBuyer_Tax_N As String = invoice("fldBuyer_Tax_N")
+                Dim fldBuyer_Street1 As String = Convert.ToString(invoice("fldBuyerStreet1"))
+                Dim fldBuyer_Street2 As String = Convert.ToString(invoice("fldBuyerStreet2"))
+                Dim fldBuyer_City As String = Convert.ToString(invoice("fldBuyerCity"))
+                Dim fldBuyer_PostCode As String = Convert.ToString(invoice("fldBuyerPostCode"))
+                Dim fldBuyer_CountryReg As String = Convert.ToString(invoice("fldBuyer_CountryReg"))
+                Dim fldBuyer_Tax_N As String = Convert.ToString(invoice("fldBuyer_Tax_N"))
                 Dim fldEUBuyer As Integer = Convert.ToInt32(CStr(invoice("fldEUBuyer")))
                 Dim fldFirstSellerEU As Integer = Convert.ToInt32(invoice("fldFirstSellerEU"))
                 Dim fldValue As String = (CStr(invoice("fldValue"))).Replace(",", ".")
-                Dim fldCurrency As String = invoice("fldCurrency")
-                Dim fldOrderID As String = invoice("fldOrderID")
+                Dim fldCurrency As String = Convert.ToString(invoice("fldCurrency"))
+                Dim fldOrderID As String = Convert.ToString(invoice("fldOrderID"))
                 Dim fldProductTPIDs As String() = Nothing
                 Dim fldProductPNs As String() = Nothing
                 Dim fldProductPrices As Decimal() = Nothing
@@ -749,6 +750,7 @@ Module Main
     End Sub
 
     Private Function StringToArray(str As String)
+        If str.IsNullOrEmpty() Then Return Nothing
         Return str.Replace(" ", "").Split(",")
     End Function
 

@@ -8,7 +8,7 @@
 	</tblGeneral>
 	<tblDBSettings>
 		<fldServer>127.0.0.1</fldServer>
-		<fldDBName>dbblagoevgradtt</fldDBName>
+		<fldDBName>dbslancetracktrace</fldDBName>
 		<fldAccount>root</fldAccount>
 		<fldPassword>toor</fldPassword>		
 	</tblDBSettings>
@@ -17,8 +17,8 @@
 		 <!-- <fldPostAddress>https://77.71.114.102:3125/</fldPostAddress>  -->
 		 <fldPostAddress>https://slance.kasiprimary.eu:3125</fldPostAddress>
 		 <fldAuthType>1</fldAuthType> <!-- 0 - NoAuth, 1 - Basic, 2 - Bearer Token -->
-		 <fldAccount>local</fldAccount>
-		 <fldPassword>test</fldPassword>
+		 <fldAccount>slanceLocal</fldAccount>
+		 <fldPassword>kasibg1234</fldPassword>
 	</tblJSONServer>
 	<tblListenerUsers>
 		<fldID>primary</fldID>
