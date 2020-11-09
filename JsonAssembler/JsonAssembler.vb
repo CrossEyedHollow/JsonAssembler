@@ -444,7 +444,7 @@ Module JsonOperationals
         json("Invoice_Date") = GetDate(invoice_date)
         json("Invoice_Seller") = invoice_seller
         json("Invoice_Buyer1") = invoice_buyer1
-        json("Invoice_Buyer2") = invoice_buyer2
+        json("Invoice_Buyer2") = If(invoice_buyer1 = 1, invoice_buyer2, Nothing)
         json("Buyer_Name") = buyer_name
         json("Buyer_CountryReg") = buyer_countryreg
         json("Buyer_Address") = buyer_address
@@ -545,7 +545,7 @@ Module JsonOperationals
         json("Payment_Amount") = payment_amount
         json("Payment_Currency") = payment_currency
         json("Payment_Payer1") = payment_payer1
-        json("Payment_Payer2") = payment_payer2
+        json("Payment_Payer2") = If(payment_payer1 = 1, payment_payer2, Nothing)
         json("Payer_Name") = payer_name
         json("Payer_Address") = payer_address
         json("Payer_Address_StreetOne") = payer_street1
