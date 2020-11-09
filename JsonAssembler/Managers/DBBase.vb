@@ -29,14 +29,13 @@ Public Class DBBase
 
         'Instantiate necessary objects
         conn = New MySqlConnection(cBuilder.ConnectionString)
-        cmd = New MySqlCommand() With {.Connection = conn}
-        adapter = New MySqlDataAdapter()
+        cmd = New MySqlCommand() With {.Connection = conn, .CommandTimeout = 60000}
+        adapter = New MySqlDataAdapter() With {.SelectCommand = cmd}
     End Sub
 
 #Region "Direct access"
     Public Function ReadDatabase(query As String) As DataTable
         cmd.CommandText = query
-        adapter.SelectCommand = cmd
         Dim output As New DataTable
 
         Try
