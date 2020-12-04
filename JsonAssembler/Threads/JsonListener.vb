@@ -24,10 +24,14 @@ Public Class JsonListener
     ''' Starts the listener
     ''' </summary>
     Public Sub Start()
-        Dim thrdListener = New Thread(AddressOf Listen)
+        Try
+            Dim thrdListener = New Thread(AddressOf Listen)
 
-        listener.Start()
-        thrdListener.Start()
+            listener.Start()
+            thrdListener.Start()
+        Catch ex As Exception
+            Output.Report("Failed to start the Listener thread.")
+        End Try
     End Sub
 
     Private Sub Listen()

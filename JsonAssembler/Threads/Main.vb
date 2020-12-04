@@ -23,25 +23,14 @@ Module Main
 
         Initialize()
 
-        'Testing area
-        'Dim arr As String() = New String() {"du", "bi", "dah"}
-        'Dim test As String = RCL("1af94ddd-fdc2-49aa-9b38-dd8246516477", RecallReasonType.Other, Guid.NewGuid().ToString())
-        'Dim test As String = IDA(Date.Now, AggregationType.Unit_Packets_Only, DeactivationType.UI_unused, arr, Nothing, "GUID_1")
-        'END of testing area
-
         Listener.Start()
-
-        ''Temp block
-        'While True
-        '    Threading.Thread.Sleep(TimeSpan.FromSeconds(5))
-        'End While
 
         Dim stopWatch As Stopwatch = New Stopwatch()
         statusManager.Start()
 
         While True
             'Wait for the daily work hour
-            WaitForRightTime()
+            WaitForWorkTime()
 
             'Check 3 times
             For i As Integer = 0 To 2
@@ -138,7 +127,7 @@ Module Main
         Return eCount
     End Function
 
-    Private Sub WaitForRightTime()
+    Private Sub WaitForWorkTime()
         'If it's time to work
         If LastDateChecked.Day <> Date.Now.Day AndAlso Date.Now.Hour = WorkHour Then
             LastDateChecked = Date.Now
@@ -147,6 +136,7 @@ Module Main
         Else
             Wait = True
             If LastReportHour <> Date.Now.Hour Then
+                'Update the last reported hour with current hour
                 LastReportHour = Date.Now.Hour
                 'Calculate the remaining time
                 Dim nextReading As Date = Date.Now.AddHours(Math.Abs(WorkHour - Date.Now.Hour)).AddMinutes(-Date.Now.Minute)

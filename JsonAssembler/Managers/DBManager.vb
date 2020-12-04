@@ -46,7 +46,7 @@ Public Class DBManager
     End Function
 
     Public Function CheckForDeactivated(table As String) As DataTable
-        Dim query As String = $"select fldCode, fldPrintCode, fldDeactReason from `{DBName}`.`{table}` where fldDeactivated = 1 and fldDeactRep is null;"
+        Dim query As String = $"SELECT fldCode, fldPrintCode, fldDeactReason from `{DBName}`.`{table}` where fldDeactivated = 1 and fldDeactRep is null;"
         Return ReadDatabase(query)
     End Function
 

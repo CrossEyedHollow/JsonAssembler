@@ -23,12 +23,19 @@ Public Class StatusManager
     End Sub
 
     Public Sub Start()
-        Dim thrdListener = New Thread(AddressOf CheckStatus)
-        thrdListener.Start()
+        Try
+            Dim thrdListener = New Thread(AddressOf CheckStatus)
+            thrdListener.Start()
+        Catch ex As Exception
+            ReportTools.Output.Report("Failed to start the status thread.")
+        End Try
     End Sub
 
     Public Sub Abort()
-        thrdListener.Abort()
+        Try
+            thrdListener.Abort()
+        Catch
+        End Try
     End Sub
 
     Public Sub CheckStatus()

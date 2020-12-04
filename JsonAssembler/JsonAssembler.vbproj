@@ -91,15 +91,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\JsonDatetime.vb" />
-    <Compile Include="JsonListener.vb" />
+    <Compile Include="Threads\JsonListener.vb" />
     <Compile Include="Managers\DBBase.vb" />
     <Compile Include="Managers\DBManager.vb" />
     <Compile Include="Helpers\Enums.vb" />
     <Compile Include="Helpers\Extenders.vb" />
     <Compile Include="Helpers\Globals.vb" />
-    <Compile Include="JsonAssembler.vb" />
+    <Compile Include="Helpers\JsonAssembler.vb" />
     <Compile Include="Managers\JsonManager.vb" />
-    <Compile Include="Main.vb" />
+    <Compile Include="Threads\Main.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -115,7 +115,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Managers\StatusManager.vb" />
+    <Compile Include="Threads\StatusManager.vb" />
     <Compile Include="Helpers\User.vb" />
   </ItemGroup>
   <ItemGroup>
